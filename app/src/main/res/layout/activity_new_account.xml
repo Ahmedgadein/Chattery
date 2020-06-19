@@ -67,12 +67,12 @@
         app:layout_constraintTop_toBottomOf="@+id/signup_email" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/signup_button_login"
-        android:layout_width="120dp"
+        android:id="@+id/signup_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Log in"
-        android:textSize="18sp"
+        android:text="Sign up"
+        android:textSize="20sp"
         app:cornerRadius="20dp"
         app:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
