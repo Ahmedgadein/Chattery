@@ -1,4 +1,4 @@
-package com.example.chattery
+package com.example.chattery.ui.activities
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -9,7 +9,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 
 class SignUpActivity : AppCompatActivity() {
@@ -59,7 +59,7 @@ class SignUpActivity : AppCompatActivity() {
 
             if(it.isSuccessful){
                 Log.d(TAG,"Created account succesfuly")
-                val intent = Intent(this,MainActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }else{

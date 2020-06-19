@@ -7,6 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/reddish</item>
         <item name="colorSecondaryVariant">@color/colorPink</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="LoginTheme" parent="Theme.MaterialComponents.Light.NoActionBar">

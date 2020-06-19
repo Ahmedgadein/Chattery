@@ -1,4 +1,4 @@
-package com.example.chattery
+package com.example.chattery.ui.activities
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -9,8 +9,8 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
-import kotlin.math.log
 
 class LoginActivity : AppCompatActivity() {
     lateinit var mAuth:FirebaseAuth  //FireBase Authentication instance
@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
             mProgressDialog.dismiss()
             if (it.isSuccessful){
                 Log.d(TAG,"Log in succesful")
-                val intent = Intent(this,MainActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }else{

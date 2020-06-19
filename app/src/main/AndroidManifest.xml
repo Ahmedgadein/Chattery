@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,11 +20,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".ui.activities.WelcomeActivity"
             android:theme="@style/LoginTheme"
             android:screenOrientation="portrait"/>
-        <activity android:name=".SignUpActivity" android:parentActivityName=".WelcomeActivity"/>
-        <activity android:name=".LoginActivity" android:parentActivityName=".WelcomeActivity"/>
+        <activity android:name=".ui.activities.SignUpActivity" android:parentActivityName=".ui.activities.WelcomeActivity"/>
+        <activity android:name=".ui.activities.LoginActivity" android:parentActivityName=".ui.activities.WelcomeActivity"/>
     </application>
 
 </manifest>
