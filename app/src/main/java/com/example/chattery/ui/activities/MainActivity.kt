@@ -15,7 +15,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-    lateinit var mAuth: FirebaseAuth
+    lateinit var mAuth: FirebaseAuth     //Firebase Authentication
     lateinit var mViewPager:ViewPager
     lateinit var mTabs:TabLayout
     lateinit var mToolbar: androidx.appcompat.widget.Toolbar
@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         if(!isNetworkAvailableAndConnected()) {
             Toast.makeText(this,"No Network Connection", Toast.LENGTH_LONG).show()
-            finish()
         }
 
     }
@@ -51,9 +50,11 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val user = mAuth.currentUser
-        if (user == null) {
+        if (user == null && isNetworkAvailableAndConnected()) {
             sendToWelcomeScreen()
             finish()
+        }else{
+            Toast.makeText(this,"No Network Connection", Toast.LENGTH_LONG).show()
         }
     }
 
