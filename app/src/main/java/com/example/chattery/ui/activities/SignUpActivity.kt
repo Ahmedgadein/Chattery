@@ -13,18 +13,22 @@ import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 
 class SignUpActivity : AppCompatActivity() {
-    private val TAG: String = "SignUpActivity"
     lateinit var mAuth: FirebaseAuth;
     lateinit var mEmail: EditText
     lateinit var mUserName: EditText
     lateinit var mPassword: EditText
     lateinit var mProgress: ProgressDialog
 
+    private val TAG: String = "SignUpActivity"
+    private val TITLE = "Sign up"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_account)
         //initiate authenticate object
         mAuth = FirebaseAuth.getInstance()
+
+        supportActionBar?.setTitle(TITLE)
 
         mEmail = findViewById(R.id.signup_email)
         mUserName = findViewById(R.id.signup_username)
@@ -60,6 +64,8 @@ class SignUpActivity : AppCompatActivity() {
             if(it.isSuccessful){
                 Log.d(TAG,"Created account succesfuly")
                 val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
                 finish()
             }else{

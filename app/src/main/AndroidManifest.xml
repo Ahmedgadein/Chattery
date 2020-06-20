@@ -23,8 +23,16 @@
             android:name=".ui.activities.WelcomeActivity"
             android:theme="@style/LoginTheme"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.SignUpActivity" android:parentActivityName=".ui.activities.WelcomeActivity"/>
-        <activity android:name=".ui.activities.LoginActivity" android:parentActivityName=".ui.activities.WelcomeActivity"/>
+
+        <activity
+            android:name=".ui.activities.SignUpActivity"
+            android:theme="@style/ActivityActionBarTheme"
+            android:parentActivityName=".ui.activities.WelcomeActivity"/>
+
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:theme="@style/ActivityActionBarTheme"
+            android:parentActivityName=".ui.activities.WelcomeActivity"/>
     </application>
 
 </manifest>

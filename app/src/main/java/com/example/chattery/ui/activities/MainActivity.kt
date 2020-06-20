@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         mToolbar = findViewById(R.id.main_page_toolbar)
+        mToolbar.setTitleTextColor(resources.getColor(R.color.design_default_color_on_primary))
         setSupportActionBar(mToolbar)
 
         mViewPager = findViewById(R.id.view_pager)

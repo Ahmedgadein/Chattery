@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -9,7 +9,16 @@
         <item name="colorSecondaryVariant">@color/colorPink</item>
         <item name="colorOnPrimary">@android:color/white</item>
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- ActionBar Activity Theme with app colors  -->
+    <style name="ActivityActionBarTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/reddish</item>
+        <item name="colorSecondaryVariant">@color/colorPink</item>
+        <item name="colorOnPrimary">@android:color/white</item>
     </style>
 
     <style name="LoginTheme" parent="Theme.MaterialComponents.Light.NoActionBar">

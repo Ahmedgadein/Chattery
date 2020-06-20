@@ -9,24 +9,29 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
     lateinit var mAuth:FirebaseAuth  //FireBase Authentication instance
 
+    lateinit var mToolbar:Toolbar
     lateinit var mEmail:EditText;
     lateinit var mPassword:EditText;
     lateinit var mLoginButton: Button;
     lateinit var mProgressDialog:ProgressDialog
 
     private val TAG = "LoginActivity"
+    private val TITLE = "Log in"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         mAuth = FirebaseAuth.getInstance()
+
+        supportActionBar?.setTitle(TITLE)
 
         mEmail = findViewById(R.id.login_email)
         mPassword = findViewById(R.id.login_password)
@@ -58,6 +63,8 @@ class LoginActivity : AppCompatActivity() {
             if (it.isSuccessful){
                 Log.d(TAG,"Log in succesful")
                 val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
                 finish()
             }else{
