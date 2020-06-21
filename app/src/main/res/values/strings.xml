@@ -8,4 +8,7 @@
     <string name="welcome_to_chattery">Welcome to Chattery</string>
     <string name="log_in_label">Log in</string>
     <string name="sign_up_label">Sign up</string>
+    <string name="status_placeholder">Hey there, I\'m on Chattery</string>
+    <string name="set_photo_label">Set Photo</string>
+    <string name="set_status_label">Set status</string>
 </resources>

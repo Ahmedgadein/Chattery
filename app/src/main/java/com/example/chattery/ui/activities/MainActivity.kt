@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
 import com.example.chattery.R
+import com.example.chattery.SettingsActivity
 import com.example.chattery.adapters.TabsAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -69,14 +70,22 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_sign_out){
-            mAuth.signOut()
-            sendToWelcomeScreen()
-            return true
-        }else{
-            return  super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when(item.itemId){
+            R.id.menu_sign_out ->{
+                mAuth.signOut()
+                sendToWelcomeScreen()
+                 true
+            }
+
+            R.id.menu_settings -> {
+                val settingsIntent = Intent(this,SettingsActivity::class.java)
+                startActivity(settingsIntent)
+                 true
+            }
+            else ->  super.onOptionsItemSelected(item)
+
         }
-    }
+
 
 }

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.chattery">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".SettingsActivity"></activity>
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,18 +22,16 @@
         </activity>
         <activity
             android:name=".ui.activities.WelcomeActivity"
-            android:theme="@style/LoginTheme"
-            android:screenOrientation="portrait"/>
-
+            android:screenOrientation="portrait"
+            android:theme="@style/LoginTheme" />
         <activity
             android:name=".ui.activities.SignUpActivity"
-            android:theme="@style/ActivityActionBarTheme"
-            android:parentActivityName=".ui.activities.WelcomeActivity"/>
-
+            android:parentActivityName=".ui.activities.WelcomeActivity"
+            android:theme="@style/ActivityActionBarTheme" />
         <activity
             android:name=".ui.activities.LoginActivity"
-            android:theme="@style/ActivityActionBarTheme"
-            android:parentActivityName=".ui.activities.WelcomeActivity"/>
+            android:parentActivityName=".ui.activities.WelcomeActivity"
+            android:theme="@style/ActivityActionBarTheme" />
     </application>
 
 </manifest>
