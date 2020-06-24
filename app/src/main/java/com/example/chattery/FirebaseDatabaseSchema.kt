@@ -10,5 +10,6 @@ open class Columns{
         val Status = "userstatus"
         val Image = "userimage"
         val ImageThumbnail = "userimagethumbnail"
+        val ProfileImagesDirectory = "profile_images"
     }
 }

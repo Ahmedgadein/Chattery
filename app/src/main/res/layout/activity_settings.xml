@@ -1,68 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/settings_bg">
+    android:background="@color/colorPrimary">
 
     <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/settings_profile_image"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:src="@drawable/avatar_empty"
-        app:civ_border_color="@android:color/white"
-        app:civ_border_width="2dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="106dp"
         android:elevation="2dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/avatar_empty"
+        app:civ_border_color="@android:color/darker_gray"
+        app:civ_border_width="5dp"
         app:civ_shadow="false"
-        app:civ_shadow_color="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:civ_shadow_color="@color/colorPrimaryDark" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/materialTextView"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/status_placeholder"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/settings_set_photo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
-
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/settings_set_photo"
+    <TextView
+        android:id="@+id/settings_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/set_photo_label"
-        android:textSize="20sp"
-        app:cornerRadius="20dp"
-        app:elevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/settings_set_status"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_below="@+id/settings_profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="Ahmed Gadein"
+        android:textStyle="bold"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@android:color/white"
+        android:textSize="35sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/settings_status"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/settings_username"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="49dp"
+        android:gravity="center_horizontal"
+        android:text="@string/status_placeholder"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/settings_set_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="120dp"
-        android:backgroundTint="@color/colorPrimaryDark"
+        android:layout_above="@+id/settings_set_photo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@android:color/white"
         android:text="@string/set_status_label"
-        android:textSize="20sp"
-        app:cornerRadius="20dp"
-        app:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        app:elevation="4dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settings_set_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="120dp"
+        android:text="@string/set_photo_label"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="4dp" />
+
+</RelativeLayout>
 

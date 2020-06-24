@@ -1,68 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/settings_bg">
+    android:background="@color/colorPrimary">
 
     <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/settings_profile_image"
         android:layout_width="200dp"
         android:layout_height="200dp"
+
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="48dp"
         android:src="@drawable/avatar_empty"
         app:civ_border_color="@android:color/white"
         app:civ_border_width="2dp"
         app:civ_shadow="true"
         app:civ_shadow_color="@android:color/white"
-        app:civ_shadow_radius="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:civ_shadow_radius="4dp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/materialTextView"
+        android:id="@+id/settings_status"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="144dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="148dp"
+        android:layout_toEndOf="@+id/settings_profile_image"
         android:gravity="center_horizontal"
         android:text="@string/status_placeholder"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/settings_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/settings_profile_image"
+        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="20dp"
+        android:layout_marginLeft="72dp"
+        android:layout_marginTop="22dp"
+        android:text="Ahmed Gadein"
+        android:textColor="@android:color/white"
+        android:textSize="34sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/settings_set_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="32dp"
+        android:layout_above="@+id/settings_set_photo"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_toStartOf="@+id/settings_set_photo"
         android:text="@string/set_status_label"
-        android:textSize="20sp"
-        app:cornerRadius="20dp"
-        app:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settings_set_photo" />
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        app:backgroundTint="@android:color/white"
+        app:elevation="4dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/settings_set_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/colorPrimaryDark"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/set_photo_label"
-        android:textSize="20sp"
-        app:cornerRadius="20dp"
-        app:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/settings_set_status"
-        app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="4dp" />
+</RelativeLayout>
 

@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
 import com.example.chattery.R
-import com.example.chattery.SettingsActivity
 import com.example.chattery.adapters.TabsAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     fun isNetworkAvailableAndConnected():Boolean {
         val connectivitymanager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return  connectivitymanager.activeNetworkInfo != null && connectivitymanager.activeNetworkInfo.isConnected
+        return !(connectivitymanager.activeNetworkInfo == null || !connectivitymanager.activeNetworkInfo.isConnected)
     }
     override fun onStart() {
         super.onStart()
@@ -79,7 +78,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.menu_settings -> {
-                val settingsIntent = Intent(this,SettingsActivity::class.java)
+                val settingsIntent = Intent(this,
+                    SettingsActivity::class.java)
                 startActivity(settingsIntent)
                  true
             }
