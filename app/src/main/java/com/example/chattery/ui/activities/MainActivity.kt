@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             sendToWelcomeScreen()
             finish()
         }else{
-            Toast.makeText(this,"No Network Connection", Toast.LENGTH_LONG).show()
+            //TODO: create meaningful toast
         }
     }
 
@@ -82,6 +82,12 @@ class MainActivity : AppCompatActivity() {
                     SettingsActivity::class.java)
                 startActivity(settingsIntent)
                  true
+            }
+
+            R.id.menu_allusers -> {
+                val intent = Intent(this,UsersActivity::class.java)
+                startActivity(intent)
+                true
             }
             else ->  super.onOptionsItemSelected(item)
 

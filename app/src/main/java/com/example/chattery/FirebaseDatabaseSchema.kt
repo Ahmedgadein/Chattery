@@ -10,6 +10,9 @@ open class Columns{
         val Status = "userstatus"
         val Image = "userimage"
         val ImageThumbnail = "userimagethumbnail"
+
+        //Firebase storage columns
         val ProfileImagesDirectory = "profile_images"
+        val ProfileThumbnailDirectory = "thumbnails"
     }
 }

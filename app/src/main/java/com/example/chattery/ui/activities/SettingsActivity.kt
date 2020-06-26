@@ -22,7 +22,13 @@ import com.google.firebase.storage.StorageReference
 import com.mikhaellopez.circularimageview.CircularImageView
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
-import java.util.*
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.File
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -89,7 +95,9 @@ class SettingsActivity : AppCompatActivity() {
                 //Update UI
                 mUsername.text = UserName
                 mStatus.text = Status
-                Picasso.get().load(Image).into(mProfilePic);
+                if(!Image.equals("default")){
+                    Picasso.get().load(Image).placeholder(R.drawable.avatar_empty).into(mProfilePic);
+                }
             }
 
         })
@@ -124,21 +132,35 @@ class SettingsActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
 
                 //Add Croped image to firebase storage
-                val resultUri = result.uri!!
-                addUserImageToDatabase(resultUri)
                 Log.i(TAG, "Recived cropped image")
+                val resultUri = result.uri!!
+                addUserImageAndThumbnailToDatabase(resultUri)
+
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error
             }
         }
     }
 
-    private fun addUserImageToDatabase(imageUri: Uri) {
+    private fun addUserImageAndThumbnailToDatabase(imageUri: Uri) {
         Log.i(TAG, "Adding image to firebase storage")
 
-        //Add image to firebase storage reference
+        //Image and thumbnail references in Firebase
         mStorageRef = FirebaseStorage.getInstance().reference
-        val mFilePath = mStorageRef.child(Columns.ProfileImagesDirectory).child( mUserId + ".jpg")
+        val mImagePath = mStorageRef.child(Columns.ProfileImagesDirectory).child( mUserId + ".jpg")
+        val mThumbnailPath = mStorageRef.child(Columns.ProfileImagesDirectory).child(Columns.ProfileThumbnailDirectory).child( mUserId + ".jpg")
+
+        // create a compressed image from image uri
+        val thumbnail_file = File(imageUri.path)
+
+        var thumbnail_imageUri: Uri? = null
+        GlobalScope.launch(Dispatchers.IO) {
+            thumbnail_imageUri = Uri.fromFile(Compressor.compress(this@SettingsActivity, thumbnail_file, Dispatchers.Main) {
+                quality(75)
+                resolution(500, 500)
+            })
+        }
+
 
         //Create and start dialog
         mProgress = ProgressDialog(this)
@@ -147,35 +169,51 @@ class SettingsActivity : AppCompatActivity() {
         mProgress.setCanceledOnTouchOutside(false)
         mProgress.show()
 
-        mFilePath.putFile(imageUri).addOnCompleteListener {
+        // Add image to database storage
+        mImagePath.putFile(imageUri).addOnCompleteListener {
             if (it.isSuccessful) {
-                Log.i(TAG, "Image added to firebase storage succesfully")
+                Log.i(TAG, "Image added to firebase storage successfully")
+                //When successful add thumbnail to storage
+                mThumbnailPath.putFile(thumbnail_imageUri!!).addOnCompleteListener {
+                    if (it.isSuccessful){
+                        Log.i(TAG, "Thumbnnail added to firebase storage successfully")
 
-                //add image url to firebase database
-                mFilePath.downloadUrl.addOnSuccessListener {
-                    val  image_url = it.toString()
-                    Log.i(TAG, "Download url: " + image_url)
-                    updateDatabaseImage(image_url)
+                        // Get the image and thumbnail urls:
+                        var image_url:String? = null
+                        var thumbnail_url:String? = null
+
+                        mImagePath.downloadUrl.addOnSuccessListener {
+                            image_url = it.toString()
+                            mThumbnailPath.downloadUrl.addOnSuccessListener {
+                                thumbnail_url = it.toString()
+                                updateDatabaseImageAndThumbnail(image_url!!,thumbnail_url!!)
+                            }
+                        }
+                    }else{
+                        mProgress.dismiss()
+                        Log.i(TAG, "Failed to add thumbnail to firebase storage")
+                    }
                 }
-
             } else {
+                mProgress.dismiss()
                 Log.i(TAG, "Failed to add image to firebase storage")
                 Toast.makeText(this, "Failed to add Image to Database", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun updateDatabaseImage(imageUri: String) {
-        mDataBaseRef.child(Columns.Image).setValue(imageUri).addOnCompleteListener {
+    private fun updateDatabaseImageAndThumbnail(imageUrl: String, thumbnailUrl:String) {
+        val data = HashMap<String,Any?>()
+        data[Columns.Image] = imageUrl
+        data[Columns.ImageThumbnail] = thumbnailUrl
 
+        mDataBaseRef.updateChildren(data).addOnCompleteListener {
             if (it.isSuccessful){
                 mProgress.dismiss()
-                Log.i(TAG, "Updated user image in firebase database")
-                Toast.makeText(this,"Changed image successfuly", Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "Updated image and thumbnail values in database")
             }else{
                 mProgress.dismiss()
-                Log.i(TAG,"Filed to update user image in firebase database")
-                Toast.makeText(this, "Failed to change image, please try again", Toast.LENGTH_LONG ).show()
+                Log.i(TAG,"Failed to update image and thumbnail values in database")
             }
         }
     }

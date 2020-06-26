@@ -87,7 +87,7 @@ class SignUpActivity : AppCompatActivity() {
         //Database entries for current user
         val data = HashMap<String, Any?>()
         data[Columns.UserName] = name
-        data[Columns.Status] = "Hey there, I'm on Chattery!"    //inspired by another sofware, Lolz :-)
+        data[Columns.Status] = "Hey there, I'm on Chattery!"    //inspired by a famous Software, Lolz :-)
         data[Columns.Image] = "default"
         data[Columns.ImageThumbnail] = "default"
 
