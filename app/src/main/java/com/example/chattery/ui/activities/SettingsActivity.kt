@@ -12,7 +12,7 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chattery.Columns
+import com.example.chattery.UsersColumns
 import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
         mUserId = mCurrentUser.uid
 
         //Get current user instance from the database
-        mDataBaseRef = FirebaseDatabase.getInstance().reference.child(Columns.Users).child(mUserId)
+        mDataBaseRef = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(mUserId)
         mDataBaseRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -87,10 +87,10 @@ class SettingsActivity : AppCompatActivity() {
             //Update the view as soon as the data is retrieved from the database
             override fun onDataChange(snapshot: DataSnapshot) {
                 //Retrieve data
-                val UserName = snapshot.child(Columns.UserName).value.toString()
-                val Status = snapshot.child(Columns.Status).value.toString()
-                val Image = snapshot.child(Columns.Image).value.toString()
-                val ThumbImage = snapshot.child(Columns.ImageThumbnail).value.toString()
+                val UserName = snapshot.child(UsersColumns.UserName).value.toString()
+                val Status = snapshot.child(UsersColumns.Status).value.toString()
+                val Image = snapshot.child(UsersColumns.Image).value.toString()
+                val ThumbImage = snapshot.child(UsersColumns.ImageThumbnail).value.toString()
 
                 //Update UI
                 mUsername.text = UserName
@@ -147,8 +147,8 @@ class SettingsActivity : AppCompatActivity() {
 
         //Image and thumbnail references in Firebase
         mStorageRef = FirebaseStorage.getInstance().reference
-        val mImagePath = mStorageRef.child(Columns.ProfileImagesDirectory).child( mUserId + ".jpg")
-        val mThumbnailPath = mStorageRef.child(Columns.ProfileImagesDirectory).child(Columns.ProfileThumbnailDirectory).child( mUserId + ".jpg")
+        val mImagePath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child( mUserId + ".jpg")
+        val mThumbnailPath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child(UsersColumns.ProfileThumbnailDirectory).child( mUserId + ".jpg")
 
         // create a compressed image from image uri
         val thumbnail_file = File(imageUri.path)
@@ -204,8 +204,8 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun updateDatabaseImageAndThumbnail(imageUrl: String, thumbnailUrl:String) {
         val data = HashMap<String,Any?>()
-        data[Columns.Image] = imageUrl
-        data[Columns.ImageThumbnail] = thumbnailUrl
+        data[UsersColumns.Image] = imageUrl
+        data[UsersColumns.ImageThumbnail] = thumbnailUrl
 
         mDataBaseRef.updateChildren(data).addOnCompleteListener {
             if (it.isSuccessful){
@@ -241,7 +241,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun changeStatus(newStatus: String) {
         //Update user status field in database
-        mDataBaseRef.child(Columns.Status).setValue(newStatus).addOnCompleteListener {
+        mDataBaseRef.child(UsersColumns.Status).setValue(newStatus).addOnCompleteListener {
             if (it.isSuccessful) {
 
                 Log.d("Dialog", "new status saved")

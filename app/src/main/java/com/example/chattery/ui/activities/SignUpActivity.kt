@@ -13,8 +13,7 @@ import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.example.chattery.Columns
-import kotlinx.android.synthetic.main.activity_new_account.*
+import com.example.chattery.UsersColumns
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var mAuth: FirebaseAuth;                //Firebase Authentication
@@ -81,15 +80,15 @@ class SignUpActivity : AppCompatActivity() {
     private fun AddUserToDataBase(name: String) {
         val mUserId = mAuth.currentUser?.uid    //Current created user id
         mDataBaseRef = FirebaseDatabase.getInstance().reference
-        mDataBaseRef = mDataBaseRef.child(Columns.Users).child(mUserId!!)    //  Database/Users/userid
+        mDataBaseRef = mDataBaseRef.child(UsersColumns.Users).child(mUserId!!)    //  Database/Users/userid
 
 
         //Database entries for current user
         val data = HashMap<String, Any?>()
-        data[Columns.UserName] = name
-        data[Columns.Status] = "Hey there, I'm on Chattery!"    //inspired by a famous Software, Lolz :-)
-        data[Columns.Image] = "default"
-        data[Columns.ImageThumbnail] = "default"
+        data[UsersColumns.UserName] = name
+        data[UsersColumns.Status] = "Hey there, I'm on Chattery!"    //inspired by a famous Software, Lolz :-)
+        data[UsersColumns.Image] = "default"
+        data[UsersColumns.ImageThumbnail] = "default"
 
         mDataBaseRef.setValue(data).addOnCompleteListener {
             mProgress.dismiss()    //Dismiss dialoge at any situation Failure/Success
