@@ -79,6 +79,7 @@ class SettingsActivity : AppCompatActivity() {
 
         //Get current user instance from the database
         mDataBaseRef = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(mUserId)
+        mDataBaseRef.keepSynced(true)
         mDataBaseRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -132,7 +133,7 @@ class SettingsActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
 
                 //Add Croped image to firebase storage
-                Log.i(TAG, "Recived cropped image")
+                Log.i(TAG, "Received cropped image")
                 val resultUri = result.uri!!
                 addUserImageAndThumbnailToDatabase(resultUri)
 
@@ -150,7 +151,7 @@ class SettingsActivity : AppCompatActivity() {
         val mImagePath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child( mUserId + ".jpg")
         val mThumbnailPath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child(UsersColumns.ProfileThumbnailDirectory).child( mUserId + ".jpg")
 
-        // create a compressed image from image uri
+        // get image file from Uri
         val thumbnail_file = File(imageUri.path)
 
         var thumbnail_imageUri: Uri? = null

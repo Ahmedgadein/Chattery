@@ -3,6 +3,8 @@ package com.example.chattery.ui.activities
 import android.app.ProgressDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,7 +12,10 @@ import com.example.chattery.*
 import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
+import java.lang.Exception
 import java.util.*
 
 class ProfileActivity : AppCompatActivity() {
@@ -18,12 +23,14 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var mUserName:TextView
     lateinit var mUserStatus:TextView
     lateinit var mRequestButton:Button
+    lateinit var mDeclineButton: Button
     lateinit var mProgress:ProgressDialog;
 
     // Databases
     lateinit var mRequestsDatabaseRef:DatabaseReference    //Friend Requests database
-    lateinit var mUsersDatabaseRef: DatabaseReference      //Users Requests database
-    lateinit var mFriendsDatabase: DatabaseReference       //Friends Requests database
+    lateinit var mUsersDatabaseRef: DatabaseReference      //Users database
+    lateinit var mFriendsDatabase: DatabaseReference       //Friends database
+    lateinit var mNotificationsDatabase:DatabaseReference  //Notifications database
 
     lateinit var mCurrentUserId:String
 
@@ -37,6 +44,9 @@ class ProfileActivity : AppCompatActivity() {
         mUserPic = findViewById(R.id.profile_user_image)
         mUserName = findViewById(R.id.profile_user_name)
         mUserStatus = findViewById(R.id.profile_user_status)
+        mDeclineButton = findViewById(R.id.profile_decline_request)
+        mDeclineButton.visibility = View.INVISIBLE
+        mDeclineButton.isEnabled = false
         initiateDialog()
 
         // Profile User Id & Current User Id
@@ -45,8 +55,10 @@ class ProfileActivity : AppCompatActivity() {
 
         mRequestsDatabaseRef = FirebaseDatabase.getInstance().reference.child(RequestColumns.Requests)
         mFriendsDatabase = FirebaseDatabase.getInstance().reference.child(FriendsColumns.Friends)
+        mNotificationsDatabase = FirebaseDatabase.getInstance().reference.child(NotificationsColumns.Notification)
 
         mUsersDatabaseRef = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(UserID)
+        mUsersDatabaseRef.keepSynced(true)
         showDialog()
         mUsersDatabaseRef.addValueEventListener(object : ValueEventListener{
 
@@ -61,7 +73,18 @@ class ProfileActivity : AppCompatActivity() {
 
                 mUserName.text = username
                 mUserStatus.text = userstatus
-                Picasso.get().load(userimage).placeholder(R.drawable.avatar_empty).into(mUserPic)
+
+                Picasso.get().load(userimage).networkPolicy(NetworkPolicy.OFFLINE)
+                    .placeholder(R.drawable.avatar_empty).into(mUserPic, object :Callback{
+                        override fun onSuccess() {
+                            //Cool! nothing to do
+                        }
+
+                        override fun onError(e: Exception?) {
+                            Picasso.get().load(userimage).placeholder(R.drawable.avatar_empty).into(mUserPic)
+                        }
+
+                    })
 
 
                 mRequestsDatabaseRef.child(mCurrentUserId).addValueEventListener(object : ValueEventListener{
@@ -76,8 +99,12 @@ class ProfileActivity : AppCompatActivity() {
                             val request_state = enumValueOf<RequestState>(snapshot.child(UserID).child(RequestColumns.Request_state).getValue().toString())
 
                             if (request_state.equals(RequestState.RECIEVED)){
+                                mDeclineButton.visibility = View.VISIBLE
+                                mDeclineButton.isEnabled = true
+
                                 mRequestState = RequestState.RECIEVED
                                 mRequestButton.text = RequestLabel.ACCEPT_REQUEST
+
 
                             }else if(request_state.equals(RequestState.SENT)){
                                 mRequestState = RequestState.SENT
@@ -90,6 +117,7 @@ class ProfileActivity : AppCompatActivity() {
             }
 
         })
+
 
         mRequestButton = findViewById(R.id.profile_send_request)
         mRequestButton.setOnClickListener {
@@ -106,10 +134,38 @@ class ProfileActivity : AppCompatActivity() {
                 mRequestState.equals(RequestState.RECIEVED) ->{
                     removeFromRequestDatabase(mCurrentUserId,UserID)
                     addToFriendsDatabase(mCurrentUserId,UserID)
+                    mDeclineButton.visibility = View.VISIBLE
+                    mDeclineButton.isEnabled = true
+                }
+
+                // If request state is FRIENDS
+                else ->{
+                    removeFromFriendsDatabase(mCurrentUserId,UserID)
                 }
             }
         }
 
+    }
+
+    private fun AddToNotificationDatabase(sender: String, reciever: String?) {
+        val data = HashMap<String, Any?>()
+        data.put(NotificationsColumns.From, sender)
+        data.put(NotificationsColumns.type,"notification")
+        mNotificationsDatabase.child(reciever!!).push().setValue(data).addOnSuccessListener {
+            mRequestButton.isEnabled = true
+            mRequestButton.text = RequestLabel.CANCEL_REQUEST
+            mRequestState = RequestState.SENT
+        }
+    }
+
+    private fun removeFromFriendsDatabase(senderID: String, recieverID: String) {
+        mFriendsDatabase.child(senderID).child(recieverID).removeValue().addOnSuccessListener {
+            mFriendsDatabase.child(recieverID).child(senderID).removeValue().addOnSuccessListener {
+                mRequestButton.isEnabled = true
+                mRequestButton.text = RequestLabel.SEND_REQUEST
+                mRequestState = RequestState.NOT_FRIENDS
+            }
+        }
     }
 
     private fun addToFriendsDatabase(senderID: String, recieverID: String) {
@@ -120,6 +176,9 @@ class ProfileActivity : AppCompatActivity() {
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.UNFRIEND
                 mRequestState = RequestState.FRIENDS
+
+                mDeclineButton.visibility = View.INVISIBLE
+                mDeclineButton.isEnabled = false
             }
         }
     }
@@ -132,16 +191,12 @@ class ProfileActivity : AppCompatActivity() {
                     // Add request {received} to profile user id
                     mRequestsDatabaseRef.child(recieverID).child(senderID)
                         .child(RequestColumns.Request_state).setValue(RequestState.RECIEVED).addOnSuccessListener {
-                            mRequestButton.isEnabled = true
-                            mRequestButton.text = RequestLabel.CANCEL_REQUEST
-                            mRequestState = RequestState.SENT
+                            AddToNotificationDatabase(senderID,recieverID)
                         }
-
                 }else{
                     //TODO: Handle error
                 }
             }
-
     }
 
     private fun removeFromRequestDatabase(senderID: String, recieverID: String) {
@@ -152,7 +207,6 @@ class ProfileActivity : AppCompatActivity() {
 
             //remove current user id from request
             mRequestsDatabaseRef.child(reciever).child(sender).removeValue().addOnSuccessListener {
-
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.SEND_REQUEST
                 mRequestState = RequestState.NOT_FRIENDS

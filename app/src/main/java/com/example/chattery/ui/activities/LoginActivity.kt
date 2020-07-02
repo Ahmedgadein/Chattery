@@ -11,10 +11,15 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.example.chattery.R
+import com.example.chattery.UsersColumns
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
 
 class LoginActivity : AppCompatActivity() {
     lateinit var mAuth:FirebaseAuth  //FireBase Authentication instance
+    lateinit var mUsersDatabase: DatabaseReference
 
     lateinit var mEmail:EditText;
     lateinit var mPassword:EditText;
@@ -29,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         mAuth = FirebaseAuth.getInstance()
+        mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
 
         supportActionBar?.setTitle(TITLE)
 
@@ -63,12 +69,20 @@ class LoginActivity : AppCompatActivity() {
             if (it.isSuccessful){
                 Log.d(TAG,"Logged in succesfully")
 
+                val tokenId = FirebaseInstanceId.getInstance().token
+                val userId = mAuth.currentUser?.uid
+
+                mUsersDatabase.child(userId!!).child(UsersColumns.TokenId).setValue(tokenId).addOnSuccessListener {
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                }
+
+
                 //When logged send user to main Activity
-                val intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                startActivity(intent)
-                finish()
+
             }else{
                 Log.d(TAG, "Failed to log in")
                 Toast.makeText(this, "Couldn't log in, try again",Toast.LENGTH_LONG).show()

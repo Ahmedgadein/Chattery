@@ -8,6 +8,7 @@ open class UsersColumns{
         val Status = "userstatus"
         val Image = "userimage"
         val ImageThumbnail = "userimagethumbnail"
+        val TokenId = "device_token"
 
         //Firebase storage columns
         val ProfileImagesDirectory = "profile_images"
@@ -26,6 +27,14 @@ class FriendsColumns{
     companion object{
         val Friends =  "Friends"
         val FriendsSince = "friends_since"
+    }
+}
+
+class NotificationsColumns{
+    companion object{
+        val Notification = "Notifications"
+        val From = "from"
+        val type = "type"
     }
 }
  enum class RequestState{

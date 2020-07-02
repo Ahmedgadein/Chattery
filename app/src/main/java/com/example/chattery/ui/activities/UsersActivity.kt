@@ -61,7 +61,7 @@ class UsersActivity : AppCompatActivity() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserHolder {
                 Log.i(TAG,"Creating viewholder")
                 val view = layoutInflater.inflate(R.layout.single_user, parent, false)
-                return UserHolder(view, this@UsersActivity)
+                return UserHolder(view)
             }
 
             override fun onBindViewHolder(holder: UserHolder, position: Int, model: User) {
@@ -84,7 +84,7 @@ class UsersActivity : AppCompatActivity() {
         mRecyclerView.adapter = mAdapter
     }
 
-    inner class UserHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView) {
+    inner class UserHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val Username = itemView.findViewById<TextView>(R.id.single_user_username)
         val Status = itemView.findViewById<TextView>(R.id.single_user_status)

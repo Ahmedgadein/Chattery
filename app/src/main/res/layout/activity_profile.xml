@@ -45,13 +45,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="Send request"
-        app:layout_constraintBottom_toTopOf="@+id/materialButton"
+        app:layout_constraintBottom_toTopOf="@+id/profile_decline_request"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/materialButton"
+        android:id="@+id/profile_decline_request"
         android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"

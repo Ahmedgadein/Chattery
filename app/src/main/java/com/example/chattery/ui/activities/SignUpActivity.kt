@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.example.chattery.UsersColumns
+import com.google.firebase.iid.FirebaseInstanceId
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var mAuth: FirebaseAuth;                //Firebase Authentication
@@ -79,6 +80,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun AddUserToDataBase(name: String) {
         val mUserId = mAuth.currentUser?.uid    //Current created user id
+        val tokenId = FirebaseInstanceId.getInstance().token
         mDataBaseRef = FirebaseDatabase.getInstance().reference
         mDataBaseRef = mDataBaseRef.child(UsersColumns.Users).child(mUserId!!)    //  Database/Users/userid
 
@@ -89,6 +91,7 @@ class SignUpActivity : AppCompatActivity() {
         data[UsersColumns.Status] = "Hey there, I'm on Chattery!"    //inspired by a famous Software, Lolz :-)
         data[UsersColumns.Image] = "default"
         data[UsersColumns.ImageThumbnail] = "default"
+        data[UsersColumns.TokenId] = tokenId!!
 
         mDataBaseRef.setValue(data).addOnCompleteListener {
             mProgress.dismiss()    //Dismiss dialoge at any situation Failure/Success
