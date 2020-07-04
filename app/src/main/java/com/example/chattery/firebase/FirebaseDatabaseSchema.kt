@@ -1,4 +1,4 @@
-package com.example.chattery
+package com.example.chattery.firebase
 
 //This Singleton provides a schema for the Firebase realtime database
 open class UsersColumns{

@@ -1,6 +1,5 @@
 package com.example.chattery.ui.activities
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chattery.UsersColumns
+import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.R
 import com.example.chattery.model.User
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -18,7 +17,10 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.mikhaellopez.circularimageview.CircularImageView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 class UsersActivity : AppCompatActivity() {
     lateinit var mQuery: Query
@@ -27,10 +29,6 @@ class UsersActivity : AppCompatActivity() {
 
     val TAG = "AllUserActivity"
     val TITLE = "All Users"
-
-    companion object{
-        val EXTRA_USER_ID = "user_id"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,9 +71,7 @@ class UsersActivity : AppCompatActivity() {
 
                 //Route to Profile activity when Clicked
                 holder.itemView.setOnClickListener {
-                    val ProfileIntent = Intent(this@UsersActivity,
-                        ProfileActivity::class.java)
-                    ProfileIntent.putExtra(EXTRA_USER_ID, UserId)
+                    val ProfileIntent = ProfileActivity.newIntent(this@UsersActivity, UserId)
                     startActivity(ProfileIntent)
                 }
             }
@@ -93,7 +89,17 @@ class UsersActivity : AppCompatActivity() {
         fun bind(user: User){
             Username.text = user.username
             Status.text = user.userstatus
-            Picasso.get().load(user.userimagethumbnail).placeholder(R.drawable.avatar_empty).into(Picture)
+            Picasso.get().load(user.userimagethumbnail).networkPolicy(NetworkPolicy.OFFLINE)
+                .placeholder(R.drawable.avatar_empty).into(Picture, object : Callback {
+                    override fun onSuccess() {
+                        //Cool! nothing to do
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Picasso.get().load(user.userimagethumbnail).placeholder(R.drawable.avatar_empty).into(Picture)
+                    }
+
+                })
         }
 
 

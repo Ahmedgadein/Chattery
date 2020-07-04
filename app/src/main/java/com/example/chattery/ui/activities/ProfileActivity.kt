@@ -1,15 +1,16 @@
 package com.example.chattery.ui.activities
 
 import android.app.ProgressDialog
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.chattery.*
 import com.example.chattery.R
+import com.example.chattery.firebase.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Callback
@@ -27,6 +28,7 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var mProgress:ProgressDialog;
 
     // Databases
+    lateinit var mRootReference: DatabaseReference
     lateinit var mRequestsDatabaseRef:DatabaseReference    //Friend Requests database
     lateinit var mUsersDatabaseRef: DatabaseReference      //Users database
     lateinit var mFriendsDatabase: DatabaseReference       //Friends database
@@ -36,10 +38,22 @@ class ProfileActivity : AppCompatActivity() {
 
     var mRequestState = RequestState.NOT_FRIENDS  // Default value
 
+
+    companion object{
+        private val EXTRA_ID = "Extra_ID"
+
+
+        fun newIntent(context: Context, userID: String): Intent{
+            val intent = Intent(context, ProfileActivity::class.java)
+            intent.putExtra(EXTRA_ID,userID)
+            return intent
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
 
         mUserPic = findViewById(R.id.profile_user_image)
         mUserName = findViewById(R.id.profile_user_name)
@@ -50,9 +64,10 @@ class ProfileActivity : AppCompatActivity() {
         initiateDialog()
 
         // Profile User Id & Current User Id
-        val UserID = intent.getStringExtra(UsersActivity.EXTRA_USER_ID)
+        val UserID = intent.getStringExtra(EXTRA_ID)
         mCurrentUserId = FirebaseAuth.getInstance().currentUser?.uid!!
 
+        mRootReference = FirebaseDatabase.getInstance().reference
         mRequestsDatabaseRef = FirebaseDatabase.getInstance().reference.child(RequestColumns.Requests)
         mFriendsDatabase = FirebaseDatabase.getInstance().reference.child(FriendsColumns.Friends)
         mNotificationsDatabase = FirebaseDatabase.getInstance().reference.child(NotificationsColumns.Notification)
@@ -96,7 +111,8 @@ class ProfileActivity : AppCompatActivity() {
                         dissmisDialog()
                         // Is the profile user in request database?
                         if (snapshot.hasChild(UserID)){
-                            val request_state = enumValueOf<RequestState>(snapshot.child(UserID).child(RequestColumns.Request_state).getValue().toString())
+                            val request_state = enumValueOf<RequestState>(snapshot.child(UserID).child(
+                                RequestColumns.Request_state).getValue().toString())
 
                             if (request_state.equals(RequestState.RECIEVED)){
                                 mDeclineButton.visibility = View.VISIBLE
@@ -124,94 +140,114 @@ class ProfileActivity : AppCompatActivity() {
             mRequestButton.isEnabled = false
             when {
                 mRequestState.equals(RequestState.NOT_FRIENDS) -> {
-                    AddToRequestsDatabase(mCurrentUserId,UserID)
+                    AddRequestAndNotification(mCurrentUserId,UserID)
                 }
 
                 mRequestState.equals(RequestState.SENT) ->{
-                    removeFromRequestDatabase(mCurrentUserId,UserID)
+                    removeFromRequest(mCurrentUserId,UserID)
                 }
 
                 mRequestState.equals(RequestState.RECIEVED) ->{
-                    removeFromRequestDatabase(mCurrentUserId,UserID)
-                    addToFriendsDatabase(mCurrentUserId,UserID)
+                    AddFriendAndRemoveRequest(mCurrentUserId, UserID)
+
                     mDeclineButton.visibility = View.VISIBLE
                     mDeclineButton.isEnabled = true
                 }
 
                 // If request state is FRIENDS
                 else ->{
-                    removeFromFriendsDatabase(mCurrentUserId,UserID)
+                    removeFriend(mCurrentUserId,UserID)
                 }
             }
         }
 
     }
 
-    private fun AddToNotificationDatabase(sender: String, reciever: String?) {
+    private fun AddRequestAndNotification(senderID: String, recieverID: String) {
+        // get Key
+        val notificationID = mNotificationsDatabase.child(recieverID).push().key
+
+        val notificationData = HashMap<String, Any?>()
+        notificationData.put(NotificationsColumns.From, senderID)
+        notificationData.put(NotificationsColumns.type,"notification")
+
+        // Update requests and notification tables
         val data = HashMap<String, Any?>()
-        data.put(NotificationsColumns.From, sender)
-        data.put(NotificationsColumns.type,"notification")
-        mNotificationsDatabase.child(reciever!!).push().setValue(data).addOnSuccessListener {
-            mRequestButton.isEnabled = true
-            mRequestButton.text = RequestLabel.CANCEL_REQUEST
-            mRequestState = RequestState.SENT
-        }
-    }
+        data.put(RequestColumns.Requests + "/" + senderID + "/" + recieverID + "/" + RequestColumns.Request_state, RequestState.SENT)
+        data.put(RequestColumns.Requests + "/" + recieverID + "/" + senderID + "/" + RequestColumns.Request_state, RequestState.RECIEVED)
+        data.put(NotificationsColumns.Notification + "/" + notificationID!!, notificationData)
 
-    private fun removeFromFriendsDatabase(senderID: String, recieverID: String) {
-        mFriendsDatabase.child(senderID).child(recieverID).removeValue().addOnSuccessListener {
-            mFriendsDatabase.child(recieverID).child(senderID).removeValue().addOnSuccessListener {
-                mRequestButton.isEnabled = true
-                mRequestButton.text = RequestLabel.SEND_REQUEST
-                mRequestState = RequestState.NOT_FRIENDS
-            }
-        }
-    }
-
-    private fun addToFriendsDatabase(senderID: String, recieverID: String) {
-        val currentDate = Date().toString()
-
-        mFriendsDatabase.child(senderID).child(recieverID).child(FriendsColumns.FriendsSince).setValue(currentDate).addOnSuccessListener {
-            mFriendsDatabase.child(recieverID).child(senderID).child(FriendsColumns.FriendsSince).setValue(currentDate).addOnSuccessListener {
-                mRequestButton.isEnabled = true
-                mRequestButton.text = RequestLabel.UNFRIEND
-                mRequestState = RequestState.FRIENDS
-
-                mDeclineButton.visibility = View.INVISIBLE
-                mDeclineButton.isEnabled = false
-            }
-        }
-    }
-
-    private fun AddToRequestsDatabase(senderID: String, recieverID: String) {
-        mRequestsDatabaseRef.child(senderID)
-            .child(recieverID).child(RequestColumns.Request_state).setValue(RequestState.SENT).addOnCompleteListener {
-                if (it.isSuccessful){
-
-                    // Add request {received} to profile user id
-                    mRequestsDatabaseRef.child(recieverID).child(senderID)
-                        .child(RequestColumns.Request_state).setValue(RequestState.RECIEVED).addOnSuccessListener {
-                            AddToNotificationDatabase(senderID,recieverID)
-                        }
+        mRootReference.updateChildren(data, object: DatabaseReference.CompletionListener{
+            override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
+                //Update button when no error occurs
+                if(error == null){
+                    mRequestButton.isEnabled = true
+                    mRequestButton.text = RequestLabel.CANCEL_REQUEST
+                    mRequestState = RequestState.SENT
                 }else{
                     //TODO: Handle error
                 }
             }
+        })
     }
 
-    private fun removeFromRequestDatabase(senderID: String, recieverID: String) {
-        val sender = senderID
-        val reciever = recieverID
+    private fun removeFromRequest(senderID: String, recieverID: String) {
+        val data = HashMap<String, Any?>()
+        data.put(RequestColumns.Requests + "/" + senderID + "/" + recieverID , null)
+        data.put(RequestColumns.Requests + "/" + recieverID + "/" + senderID , null)
 
-        mRequestsDatabaseRef.child(sender).child(reciever).removeValue().addOnSuccessListener {
-
-            //remove current user id from request
-            mRequestsDatabaseRef.child(reciever).child(sender).removeValue().addOnSuccessListener {
-                mRequestButton.isEnabled = true
-                mRequestButton.text = RequestLabel.SEND_REQUEST
-                mRequestState = RequestState.NOT_FRIENDS
+        mRootReference.updateChildren(data, object :DatabaseReference.CompletionListener{
+            override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
+                // Update request table when no error occurs
+                if(error == null){
+                    mRequestButton.isEnabled = true
+                    mRequestButton.text = RequestLabel.SEND_REQUEST
+                    mRequestState = RequestState.NOT_FRIENDS
+                }else{
+                    //TODO: Handle error
+                }
             }
-        }
+        })
+    }
+
+    private fun AddFriendAndRemoveRequest(senderID: String, recieverID: String) {
+        val date = Date().toString()
+
+        val data = HashMap<String, Any?>()
+        data.put(FriendsColumns.Friends + "/" + senderID + "/" + recieverID + "/" + FriendsColumns.FriendsSince, date)
+        data.put(FriendsColumns.Friends + "/" + recieverID + "/" + senderID + "/" + FriendsColumns.FriendsSince, date)
+        data.put(RequestColumns.Requests + "/" + senderID + "/" + recieverID , null)
+        data.put(RequestColumns.Requests + "/" + recieverID + "/" + senderID , null)
+
+        mRootReference.updateChildren(data, object : DatabaseReference.CompletionListener{
+            override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
+                if (error == null){
+                    mRequestButton.isEnabled = true
+                    mRequestButton.text = RequestLabel.UNFRIEND
+                    mRequestState = RequestState.FRIENDS
+                }else{
+                    //TODO: Handle error
+                }
+            }
+        })
+    }
+
+    private fun removeFriend(senderID: String, recieverID: String) {
+        val data = HashMap<String, Any?>()
+        data.put(FriendsColumns.Friends + "/" + senderID + "/" + recieverID, null)
+        data.put(FriendsColumns.Friends + "/" + recieverID + "/" + senderID, null)
+
+        mRootReference.updateChildren(data, object : DatabaseReference.CompletionListener{
+            override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
+                if (error == null){
+                    mRequestButton.isEnabled = true
+                    mRequestButton.text = RequestLabel.SEND_REQUEST
+                    mRequestState = RequestState.NOT_FRIENDS
+                }else{
+                    //TODO: Handle error
+                }
+            }
+        })
     }
 
     private fun initiateDialog() {

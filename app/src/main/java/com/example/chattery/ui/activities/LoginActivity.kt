@@ -9,9 +9,8 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import com.example.chattery.R
-import com.example.chattery.UsersColumns
+import com.example.chattery.firebase.UsersColumns
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -41,17 +40,20 @@ class LoginActivity : AppCompatActivity() {
         mEmail = findViewById(R.id.login_email)
         mPassword = findViewById(R.id.login_password)
 
-        //Logging in dialoge
-        mProgressDialog = ProgressDialog(this)
-        mProgressDialog.setTitle("Logging in")
-        mProgressDialog.setMessage("Please wait while we log in to your account")
-        mProgressDialog.setCanceledOnTouchOutside(false)
+        initiateProgressDialog()
 
         mLoginButton = findViewById(R.id.login_button)
         mLoginButton.setOnClickListener {
             mProgressDialog.show()
             logInUser(mEmail.text.toString(), mPassword.text.toString())
         }
+    }
+
+    private fun initiateProgressDialog() {
+        mProgressDialog = ProgressDialog(this)
+        mProgressDialog.setTitle("Logging in")
+        mProgressDialog.setMessage("Please wait while we log in to your account")
+        mProgressDialog.setCanceledOnTouchOutside(false)
     }
 
     fun logInUser(email:String,password:String){
@@ -73,10 +75,7 @@ class LoginActivity : AppCompatActivity() {
                 val userId = mAuth.currentUser?.uid
 
                 mUsersDatabase.child(userId!!).child(UsersColumns.TokenId).setValue(tokenId).addOnSuccessListener {
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
+                    sendToMainPage()
                     finish()
                 }
 
@@ -88,6 +87,13 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Couldn't log in, try again",Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun sendToMainPage() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 
     // Check non null email and password

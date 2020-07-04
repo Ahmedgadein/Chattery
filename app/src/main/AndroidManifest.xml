@@ -16,7 +16,6 @@
         android:theme="@style/AppTheme"
         android:name=".ChatteryApplication">
 
-        <activity android:name=".ui.activities.ProfileActivity"></activity>
         <activity android:name=".ui.activities.SettingsActivity" />
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
@@ -41,9 +40,25 @@
             android:name=".ui.activities.UsersActivity"
             android:parentActivityName=".ui.activities.SettingsActivity"
             android:theme="@style/ActivityActionBarTheme" />
+        <activity android:name=".ui.activities.ProfileActivity">
+            <intent-filter>
+                <action android:name="com.example.chattery.NOTIFICATION_TARGET"/>
+                <category android:name = "android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
+
+        <service
+            android:name=".firebase.MessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

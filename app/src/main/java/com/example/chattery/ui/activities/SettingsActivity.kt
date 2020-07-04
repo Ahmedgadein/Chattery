@@ -12,7 +12,7 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chattery.UsersColumns
+import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -20,6 +20,8 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.mikhaellopez.circularimageview.CircularImageView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import id.zelory.compressor.Compressor
@@ -29,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.lang.Exception
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -96,8 +99,19 @@ class SettingsActivity : AppCompatActivity() {
                 //Update UI
                 mUsername.text = UserName
                 mStatus.text = Status
+
                 if(!Image.equals("default")){
-                    Picasso.get().load(Image).placeholder(R.drawable.avatar_empty).into(mProfilePic);
+                    Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.drawable.avatar_empty).into(mProfilePic, object : Callback {
+                            override fun onSuccess() {
+                                //Cool! nothing to do
+                            }
+
+                            override fun onError(e: Exception?) {
+                                Picasso.get().load(Image).placeholder(R.drawable.avatar_empty).into(mProfilePic)
+                            }
+
+                        })
                 }
             }
 
@@ -149,7 +163,8 @@ class SettingsActivity : AppCompatActivity() {
         //Image and thumbnail references in Firebase
         mStorageRef = FirebaseStorage.getInstance().reference
         val mImagePath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child( mUserId + ".jpg")
-        val mThumbnailPath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child(UsersColumns.ProfileThumbnailDirectory).child( mUserId + ".jpg")
+        val mThumbnailPath = mStorageRef.child(UsersColumns.ProfileImagesDirectory).child(
+            UsersColumns.ProfileThumbnailDirectory).child( mUserId + ".jpg")
 
         // get image file from Uri
         val thumbnail_file = File(imageUri.path)
@@ -164,10 +179,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
         //Create and start dialog
-        mProgress = ProgressDialog(this)
-        mProgress.setTitle("Uploading...")
-        mProgress.setMessage("Please wait while we upload the image")
-        mProgress.setCanceledOnTouchOutside(false)
+        initiateProgressDialog()
         mProgress.show()
 
         // Add image to database storage
@@ -201,6 +213,13 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to add Image to Database", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun initiateProgressDialog() {
+        mProgress = ProgressDialog(this)
+        mProgress.setTitle("Uploading...")
+        mProgress.setMessage("Please wait while we upload the image")
+        mProgress.setCanceledOnTouchOutside(false)
     }
 
     private fun updateDatabaseImageAndThumbnail(imageUrl: String, thumbnailUrl:String) {

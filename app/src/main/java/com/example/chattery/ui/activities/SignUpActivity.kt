@@ -13,7 +13,7 @@ import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.example.chattery.UsersColumns
+import com.example.chattery.firebase.UsersColumns
 import com.google.firebase.iid.FirebaseInstanceId
 
 class SignUpActivity : AppCompatActivity() {
@@ -40,11 +40,7 @@ class SignUpActivity : AppCompatActivity() {
         mPassword = findViewById(R.id.signup_password)
 
         //Create a loading dialoge
-        mProgress = ProgressDialog(this)
-        mProgress.setTitle("Creating account")
-        mProgress.setMessage("Please wait while we create your account")
-        mProgress.setCanceledOnTouchOutside(false)
-        mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        initiateProgressDialog()
 
         val mSignupButton = findViewById<Button>(R.id.signup_button)
         mSignupButton.setOnClickListener {
@@ -54,9 +50,17 @@ class SignUpActivity : AppCompatActivity() {
 
     }
 
+    private fun initiateProgressDialog() {
+        mProgress = ProgressDialog(this)
+        mProgress.setTitle("Creating account")
+        mProgress.setMessage("Please wait while we create your account")
+        mProgress.setCanceledOnTouchOutside(false)
+        mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+    }
+
     fun signUpUser(name: String, email: String, password: String) {
 
-        //Validate entries text, if not valid abandon account creation
+        //Validate entries, if not valid abandon account creation
         if (!isValidUserNameEmailAndPassword(username = name, email = email, password = password)) {
             mProgress.dismiss()
             Toast.makeText(this, "Couldn't create account, check your data", Toast.LENGTH_LONG)
@@ -80,7 +84,8 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun AddUserToDataBase(name: String) {
         val mUserId = mAuth.currentUser?.uid    //Current created user id
-        val tokenId = FirebaseInstanceId.getInstance().token
+        val tokenId = FirebaseInstanceId.getInstance().token   //User token
+
         mDataBaseRef = FirebaseDatabase.getInstance().reference
         mDataBaseRef = mDataBaseRef.child(UsersColumns.Users).child(mUserId!!)    //  Database/Users/userid
 
