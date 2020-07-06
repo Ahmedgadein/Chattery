@@ -1,10 +1,12 @@
 package com.example.chattery
 
 import androidx.appcompat.app.AppCompatActivity
+import com.example.chattery.firebase.OnlineStatus.Companion.Online
 import com.example.chattery.firebase.UsersColumns
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 
 open class ChatteryActivity : AppCompatActivity(){
     private var mUsersDatabaseOnlineLabel = if(FirebaseAuth.getInstance().currentUser!= null){
@@ -30,14 +32,14 @@ open class ChatteryActivity : AppCompatActivity(){
 
     protected fun setUserOnline() {
         if (userExists()){
-            mUsersDatabaseOnlineLabel.setValue(true)
+            mUsersDatabaseOnlineLabel.setValue(Online)
         }
 
     }
 
     protected fun setUserOffline() {
         if (userExists()){
-            mUsersDatabaseOnlineLabel.setValue(false)
+            mUsersDatabaseOnlineLabel.setValue(ServerValue.TIMESTAMP)
         }
     }
 

@@ -1,19 +1,25 @@
 package com.example.chattery.ui.fragments
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.NumberPicker
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.chattery.ChatActivity
 import com.example.chattery.R
 import com.example.chattery.firebase.FriendsColumns
+import com.example.chattery.firebase.OnlineStatus
 import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.model.Friend
+import com.example.chattery.ui.activities.MainActivity
+import com.example.chattery.ui.activities.ProfileActivity
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -41,8 +47,8 @@ class FriendsFragment : Fragment() {
 
         mAuth = FirebaseAuth.getInstance()
         mQuery = FirebaseDatabase.getInstance().reference.child(FriendsColumns.Friends).child(mAuth.currentUser?.uid!!)
-        mQuery.keepSynced(true)
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
+        mQuery.keepSynced(true)
         mUsersDatabase.keepSynced(true)
 
         mFriendsRecyclerView = view.findViewById(R.id.friends_recycerview)
@@ -69,6 +75,7 @@ class FriendsFragment : Fragment() {
 
             override fun onBindViewHolder(holder: FriendHolder, position: Int, model: Friend) {
                 val userID = getRef(position).key!!
+
                 mUsersDatabase.child(userID).addValueEventListener(object : ValueEventListener{
                     override fun onCancelled(p0: DatabaseError) {
                         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -77,11 +84,28 @@ class FriendsFragment : Fragment() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val username = snapshot.child(UsersColumns.UserName).value.toString()
                         val thumbnail = snapshot.child(UsersColumns.ImageThumbnail).value.toString()
-                        val online = snapshot.child(UsersColumns.Online).value as Boolean
+                        val online = snapshot.child(UsersColumns.Online).value.toString()
                         holder.bindDate(model, username,thumbnail, online)
                     }
 
                 })
+
+                holder.itemView.setOnClickListener {
+                    val options = arrayOf("Open Profile", "Send Message")
+                    val builder = AlertDialog.Builder(context!!)
+                        .setTitle("Options")
+                        .setItems(options,DialogInterface.OnClickListener { dialogInterface, position ->
+                            val intent = when(position){
+                                0 -> ProfileActivity.newIntent(context!!, userID)
+                                1 -> ChatActivity.newIntent(context!!,userID)
+
+                                // Place holder for "else", will not actually happen
+                                else -> Intent(context!!, MainActivity::class.java)
+                            }
+                            startActivity(intent)
+                        })
+                    builder.create().show()
+                }
             }
 
         }
@@ -94,10 +118,10 @@ class FriendsFragment : Fragment() {
         private val mImage = itemView.findViewById<CircularImageView>(R.id.single_user_pic)
         private val mOnlineLabel = itemView.findViewById<ImageView>(R.id.single_user_online)
 
-        fun bindDate(model: Friend, userName:String, thumbnailURL: String, online: Boolean){
+        fun bindDate(model: Friend, userName:String, thumbnailURL: String, online: String){
             mDateText.text = model.friends_since
             mUserNameText.text = userName
-            mOnlineLabel.visibility = if(online) View.VISIBLE else View.INVISIBLE
+            mOnlineLabel.visibility = if(online.equals(OnlineStatus.Online)) View.VISIBLE else View.INVISIBLE
             Picasso.get().load(thumbnailURL).networkPolicy(NetworkPolicy.OFFLINE)
                 .placeholder(R.drawable.avatar_empty).into(mImage, object : Callback {
                     override fun onSuccess() {

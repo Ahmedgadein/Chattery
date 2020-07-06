@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.example.chattery.firebase.UsersColumns
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 
@@ -32,7 +33,7 @@ override fun onCreate() {
             val mUsersDatabaseOnlineLabel = FirebaseDatabase.getInstance()
                 .reference.child(UsersColumns.Users).child(mCurrentUser!!.uid)
 
-            mUsersDatabaseOnlineLabel.child(UsersColumns.Online).onDisconnect().setValue(false)
+            mUsersDatabaseOnlineLabel.child(UsersColumns.Online).onDisconnect().setValue(ServerValue.TIMESTAMP)
         }
 
     }

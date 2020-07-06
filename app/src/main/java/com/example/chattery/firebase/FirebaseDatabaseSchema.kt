@@ -55,3 +55,9 @@ class RequestLabel{
     }
 }
 
+class OnlineStatus{
+    companion object{
+        val Online = "online"
+    }
+}
+
