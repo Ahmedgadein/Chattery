@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.chattery.ChatteryActivity
 import com.example.chattery.R
 import com.example.chattery.firebase.*
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +20,7 @@ import com.squareup.picasso.Picasso
 import java.lang.Exception
 import java.util.*
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : ChatteryActivity() {
     lateinit var mUserPic:ImageView
     lateinit var mUserName:TextView
     lateinit var mUserStatus:TextView
@@ -175,7 +176,7 @@ class ProfileActivity : AppCompatActivity() {
         val data = HashMap<String, Any?>()
         data.put(RequestColumns.Requests + "/" + senderID + "/" + recieverID + "/" + RequestColumns.Request_state, RequestState.SENT)
         data.put(RequestColumns.Requests + "/" + recieverID + "/" + senderID + "/" + RequestColumns.Request_state, RequestState.RECIEVED)
-        data.put(NotificationsColumns.Notification + "/" + notificationID!!, notificationData)
+        data.put(NotificationsColumns.Notification + "/" + recieverID + "/" + notificationID!!, notificationData)
 
         mRootReference.updateChildren(data, object: DatabaseReference.CompletionListener{
             override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {

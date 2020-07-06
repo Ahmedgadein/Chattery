@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.chattery.ChatteryActivity
 import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth
@@ -34,11 +35,14 @@ import java.io.File
 import java.lang.Exception
 
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : ChatteryActivity() {
     //Firebase user & reference to users Database
     lateinit var mDataBaseRef: DatabaseReference
     lateinit var mCurrentUser: FirebaseUser
     lateinit var mUserId:String
+    val mUsersDatabaseOnlineLabel= FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
+        .child(FirebaseAuth.getInstance().currentUser!!.uid).child(UsersColumns.Online)
+
 
     //Firebase Storage reference
     lateinit var mStorageRef: StorageReference
@@ -51,12 +55,15 @@ class SettingsActivity : AppCompatActivity() {
 
     lateinit var mProgress:ProgressDialog;
 
+
     private val REQUEST_IMAGE = 0;
     private val TAG = "SettingsActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+
 
         mProfilePic = findViewById(R.id.settings_profile_image)
         mUsername = findViewById(R.id.settings_username)

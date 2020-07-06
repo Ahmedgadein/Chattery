@@ -5,20 +5,26 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
+import com.example.chattery.ChatteryActivity
 import com.example.chattery.R
 import com.example.chattery.adapters.TabsAdapter
+import com.example.chattery.firebase.UsersColumns
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ChatteryActivity() {
     lateinit var mAuth: FirebaseAuth     //Firebase Authentication
     lateinit var mViewPager:ViewPager
     lateinit var mTabs:TabLayout
     lateinit var mToolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var mUsersDatabaseOnlineLabel:DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +61,15 @@ class MainActivity : AppCompatActivity() {
             finish()
         }else{
             //TODO: create meaningful toast
+            mUsersDatabaseOnlineLabel = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(FirebaseAuth.getInstance().currentUser!!.uid).child(UsersColumns.Online)
+            setUserOnline()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (userExists()){
+            setUserOffline()
         }
     }
 

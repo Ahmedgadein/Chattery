@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.chattery.ChatteryActivity
 import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.R
 import com.example.chattery.model.User
@@ -22,7 +23,7 @@ import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import java.lang.Exception
 
-class UsersActivity : AppCompatActivity() {
+class UsersActivity : ChatteryActivity() {
     lateinit var mQuery: Query
     lateinit var mAdapter: FirebaseRecyclerAdapter<User, UserHolder>;
     lateinit var mRecyclerView: RecyclerView
@@ -89,19 +90,21 @@ class UsersActivity : AppCompatActivity() {
         fun bind(user: User){
             Username.text = user.username
             Status.text = user.userstatus
-            Picasso.get().load(user.userimagethumbnail).networkPolicy(NetworkPolicy.OFFLINE)
-                .placeholder(R.drawable.avatar_empty).into(Picture, object : Callback {
-                    override fun onSuccess() {
-                        //Cool! nothing to do
-                    }
+            if (user.userimagethumbnail != "default"){
+                Picasso.get().load(user.userimagethumbnail.toString()).networkPolicy(NetworkPolicy.OFFLINE)
+                    .placeholder(R.drawable.avatar_empty).into(Picture, object : Callback {
+                        override fun onSuccess() {
+                            //Cool! nothing to do
+                        }
 
-                    override fun onError(e: Exception?) {
-                        Picasso.get().load(user.userimagethumbnail).placeholder(R.drawable.avatar_empty).into(Picture)
-                    }
+                        override fun onError(e: Exception?) {
+                            Picasso.get().load(user.userimagethumbnail).placeholder(R.drawable.avatar_empty).into(Picture)
+                        }
 
-                })
+                    })
+            }
+
         }
-
 
     }
 

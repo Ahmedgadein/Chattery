@@ -16,7 +16,9 @@
         android:theme="@style/AppTheme"
         android:name=".ChatteryApplication">
 
-        <activity android:name=".ui.activities.SettingsActivity" />
+        <activity android:name=".ui.activities.SettingsActivity"
+            android:parentActivityName=".ui.activities.MainActivity"/>
+
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,15 +34,18 @@
             android:name=".ui.activities.SignUpActivity"
             android:parentActivityName=".ui.activities.WelcomeActivity"
             android:theme="@style/ActivityActionBarTheme" />
+
         <activity
             android:name=".ui.activities.LoginActivity"
             android:parentActivityName=".ui.activities.WelcomeActivity"
             android:theme="@style/ActivityActionBarTheme" />
+
         <activity
             android:name=".ui.activities.UsersActivity"
             android:parentActivityName=".ui.activities.SettingsActivity"
             android:theme="@style/ActivityActionBarTheme" />
         <activity android:name=".ui.activities.ProfileActivity">
+
             <intent-filter>
                 <action android:name="com.example.chattery.NOTIFICATION_TARGET"/>
                 <category android:name = "android.intent.category.DEFAULT"/>

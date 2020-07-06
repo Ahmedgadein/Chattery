@@ -9,6 +9,7 @@ open class UsersColumns{
         val Image = "userimage"
         val ImageThumbnail = "userimagethumbnail"
         val TokenId = "device_token"
+        val Online = "online"
 
         //Firebase storage columns
         val ProfileImagesDirectory = "profile_images"

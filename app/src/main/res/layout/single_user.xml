@@ -24,18 +24,35 @@
         android:layout_toEndOf="@+id/single_user_pic"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/single_user_username"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_alignParentTop="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_toEndOf="@+id/single_user_pic"
-            android:fontFamily="@font/roboto_bold"
-            android:text="User Name"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
+            android:layout_toEndOf="@+id/single_user_pic">
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/single_user_username"
+                android:fontFamily="@font/roboto_bold"
+                android:text="User Name"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"/>
+
+            <ImageView
+                android:id="@+id/single_user_online"
+                android:layout_marginLeft="12dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/online_circle"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/single_user_status"

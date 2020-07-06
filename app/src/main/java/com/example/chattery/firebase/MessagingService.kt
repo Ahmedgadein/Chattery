@@ -43,7 +43,6 @@ class MessagingService: FirebaseMessagingService(){
         val notification_title = remoteMessage?.notification?.title
         val notification_body = remoteMessage?.notification?.body
         val user_id = remoteMessage?.data?.get("user_from_id")
-        val activity_action = remoteMessage?.notification?.clickAction
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
