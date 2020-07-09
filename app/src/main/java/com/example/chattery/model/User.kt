@@ -4,6 +4,4 @@ data class User(
     var username:String = " ",
     var userstatus:String = " ",
     var userimage:String = " ",
-    var userimagethumbnail:String = " ") {
-
-}
+    var userimagethumbnail:String = " ")

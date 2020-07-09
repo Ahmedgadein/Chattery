@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import java.util.*
 
 open class ChatteryActivity : AppCompatActivity(){
     private var mUsersDatabaseOnlineLabel = if(FirebaseAuth.getInstance().currentUser!= null){
@@ -39,11 +40,12 @@ open class ChatteryActivity : AppCompatActivity(){
 
     protected fun setUserOffline() {
         if (userExists()){
+            val timestamp = Calendar.getInstance().timeInMillis
             mUsersDatabaseOnlineLabel.setValue(ServerValue.TIMESTAMP)
         }
     }
 
 
-    fun userExists() = if (FirebaseAuth.getInstance().currentUser == null) false else true
+    fun userExists() = FirebaseAuth.getInstance().currentUser != null
 
 }

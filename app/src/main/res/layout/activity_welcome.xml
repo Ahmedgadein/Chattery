@@ -6,20 +6,6 @@
     android:background="@drawable/login_bg"
     style="@style/Theme.MaterialComponents.Light.NoActionBar">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="24dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="24dp" />
-
     <ImageView
         android:id="@+id/logo_view"
         android:layout_width="150dp"
@@ -44,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@+id/logo_view" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button"
+        android:id="@+id/welcomescreen_log_in_button"
         style="?materialButtonOutlinedStyle"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
@@ -61,7 +47,7 @@
         app:strokeWidth="1dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button2"
+        android:id="@+id/welcomescreen_sign_up_button"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -71,7 +57,7 @@
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/welcomescreen_log_in_button"
         style="?materialButtonOutlinedStyle"
         app:strokeWidth="1dp"
         app:strokeColor="@color/sky_blue"/>

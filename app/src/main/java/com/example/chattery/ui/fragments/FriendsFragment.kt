@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chattery.ChatActivity
+import com.example.chattery.ui.activities.ChatActivity
 import com.example.chattery.R
 import com.example.chattery.firebase.FriendsColumns
 import com.example.chattery.firebase.OnlineStatus
@@ -31,6 +31,7 @@ import com.squareup.picasso.Picasso
 import java.lang.Exception
 
 class FriendsFragment : Fragment() {
+    //Firebase
     private lateinit var mFriendsRecyclerView: RecyclerView
     private lateinit var mFriendsAdapter:FirebaseRecyclerAdapter<Friend,FriendHolder>
     private lateinit var mUsersDatabase: DatabaseReference
@@ -46,8 +47,10 @@ class FriendsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_friends,container,false)
 
         mAuth = FirebaseAuth.getInstance()
+
         mQuery = FirebaseDatabase.getInstance().reference.child(FriendsColumns.Friends).child(mAuth.currentUser?.uid!!)
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
+
         mQuery.keepSynced(true)
         mUsersDatabase.keepSynced(true)
 
@@ -63,6 +66,7 @@ class FriendsFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         mFriendsAdapter = object: FirebaseRecyclerAdapter<Friend,FriendHolder>(
+            //Firebase options
             FirebaseRecyclerOptions.Builder<Friend>()
                 .setQuery(mQuery,Friend::class.java)
                 .setLifecycleOwner(this)
@@ -74,11 +78,12 @@ class FriendsFragment : Fragment() {
             }
 
             override fun onBindViewHolder(holder: FriendHolder, position: Int, model: Friend) {
+                //Friend User ID
                 val userID = getRef(position).key!!
 
                 mUsersDatabase.child(userID).addValueEventListener(object : ValueEventListener{
                     override fun onCancelled(p0: DatabaseError) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        //TODO: Handle error
                     }
 
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -93,7 +98,7 @@ class FriendsFragment : Fragment() {
                 holder.itemView.setOnClickListener {
                     val options = arrayOf("Open Profile", "Send Message")
                     val builder = AlertDialog.Builder(context!!)
-                        .setTitle("Options")
+                        .setTitle("Select Option")
                         .setItems(options,DialogInterface.OnClickListener { dialogInterface, position ->
                             val intent = when(position){
                                 0 -> ProfileActivity.newIntent(context!!, userID)
@@ -131,10 +136,7 @@ class FriendsFragment : Fragment() {
                     override fun onError(e: Exception?) {
                         Picasso.get().load(thumbnailURL).placeholder(R.drawable.avatar_empty).into(mImage)
                     }
-
                 })
-
         }
     }
-
 }

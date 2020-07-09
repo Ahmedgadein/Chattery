@@ -35,7 +35,7 @@ class UsersActivity : ChatteryActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_users)
 
-        supportActionBar?.setTitle(TITLE)
+        supportActionBar?.title = TITLE
 
         mQuery = FirebaseDatabase.getInstance()
             .reference
@@ -64,7 +64,7 @@ class UsersActivity : ChatteryActivity() {
             }
 
             override fun onBindViewHolder(holder: UserHolder, position: Int, model: User) {
-                Log.i(TAG, "Binding user: " + position )
+                Log.i(TAG, "Binding user: $position")
                 holder.bind((model))
 
                 //Extract the user ID
@@ -88,6 +88,7 @@ class UsersActivity : ChatteryActivity() {
         val Picture = itemView.findViewById<CircularImageView>(R.id.single_user_pic)
 
         fun bind(user: User){
+            //Update data
             Username.text = user.username
             Status.text = user.userstatus
             if (user.userimagethumbnail != "default"){
@@ -100,14 +101,10 @@ class UsersActivity : ChatteryActivity() {
                         override fun onError(e: Exception?) {
                             Picasso.get().load(user.userimagethumbnail).placeholder(R.drawable.avatar_empty).into(Picture)
                         }
-
                     })
             }
-
         }
-
     }
-
 }
 
 

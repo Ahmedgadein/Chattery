@@ -30,16 +30,15 @@ class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_account)
-        //initiate authenticate object
+
         mAuth = FirebaseAuth.getInstance()
 
-        supportActionBar?.setTitle(TITLE)
+        supportActionBar?.title = TITLE
 
         mEmail = findViewById(R.id.signup_email)
         mUserName = findViewById(R.id.signup_username)
         mPassword = findViewById(R.id.signup_password)
 
-        //Create a loading dialoge
         initiateProgressDialog()
 
         val mSignupButton = findViewById<Button>(R.id.signup_button)
@@ -122,7 +121,7 @@ class SignUpActivity : AppCompatActivity() {
         finish()
     }
 
-    //Validate non null email and password
+    //Validate non empty email and password
     private fun isValidUserNameEmailAndPassword(username: String, email: String, password: String) =
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(username)) false else true
 }

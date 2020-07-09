@@ -38,6 +38,23 @@ class NotificationsColumns{
         val type = "type"
     }
 }
+
+class ChatsColumns{
+    companion object{
+        val Chats = "Chats"
+        val Seen = "seen"
+        val Timestamp = "timestamp"
+    }
+}
+
+class MessageColumns{
+    companion object{
+        val Messages = "Messages"
+        val Message = "message"
+        val Seen = "seen"
+        val TimeStamp = "timestamp"
+    }
+}
  enum class RequestState{
      NOT_FRIENDS,
      FRIENDS,

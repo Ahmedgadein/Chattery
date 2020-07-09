@@ -13,13 +13,13 @@ class WelcomeActivity: AppCompatActivity() {
         setContentView(R.layout.activity_welcome)
 
 
-        val mLoginButton = findViewById<Button>(R.id.button)
+        val mLoginButton = findViewById<Button>(R.id.welcomescreen_log_in_button)
         mLoginButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
-        val mSignupButton = findViewById<Button>(R.id.button2)
+        val mSignupButton = findViewById<Button>(R.id.welcomescreen_sign_up_button)
         mSignupButton.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)

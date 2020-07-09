@@ -36,13 +36,10 @@ import java.lang.Exception
 
 
 class SettingsActivity : ChatteryActivity() {
-    //Firebase user & reference to users Database
+    //Firebase Database reference
     lateinit var mDataBaseRef: DatabaseReference
     lateinit var mCurrentUser: FirebaseUser
     lateinit var mUserId:String
-    val mUsersDatabaseOnlineLabel= FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
-        .child(FirebaseAuth.getInstance().currentUser!!.uid).child(UsersColumns.Online)
-
 
     //Firebase Storage reference
     lateinit var mStorageRef: StorageReference
@@ -62,8 +59,6 @@ class SettingsActivity : ChatteryActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
-
 
         mProfilePic = findViewById(R.id.settings_profile_image)
         mUsername = findViewById(R.id.settings_username)
@@ -92,16 +87,15 @@ class SettingsActivity : ChatteryActivity() {
         mDataBaseRef.keepSynced(true)
         mDataBaseRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                //TODO:Handle error
             }
 
             //Update the view as soon as the data is retrieved from the database
             override fun onDataChange(snapshot: DataSnapshot) {
-                //Retrieve data
+
                 val UserName = snapshot.child(UsersColumns.UserName).value.toString()
                 val Status = snapshot.child(UsersColumns.Status).value.toString()
                 val Image = snapshot.child(UsersColumns.Image).value.toString()
-                val ThumbImage = snapshot.child(UsersColumns.ImageThumbnail).value.toString()
 
                 //Update UI
                 mUsername.text = UserName
@@ -142,18 +136,20 @@ class SettingsActivity : ChatteryActivity() {
             Log.i(TAG, "Got image URI from local storage")
             val imageURI = data?.data
 
-            //Start a crop activity using the image uri recieved
+            //Start a crop activity using the image uri received
             CropImage.activity(imageURI)
                 .setAspectRatio(1, 1)
                 .start(this);
         }
+
+
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
             //image uri
             val result = CropImage.getActivityResult(data)
             if (resultCode == Activity.RESULT_OK) {
 
-                //Add Croped image to firebase storage
+                //Add Cropped image to firebase storage
                 Log.i(TAG, "Received cropped image")
                 val resultUri = result.uri!!
                 addUserImageAndThumbnailToDatabase(resultUri)

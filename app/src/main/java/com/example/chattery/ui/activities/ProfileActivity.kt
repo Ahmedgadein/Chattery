@@ -3,7 +3,6 @@ package com.example.chattery.ui.activities
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -43,7 +42,6 @@ class ProfileActivity : ChatteryActivity() {
     companion object{
         private val EXTRA_ID = "Extra_ID"
 
-
         fun newIntent(context: Context, userID: String): Intent{
             val intent = Intent(context, ProfileActivity::class.java)
             intent.putExtra(EXTRA_ID,userID)
@@ -60,8 +58,10 @@ class ProfileActivity : ChatteryActivity() {
         mUserName = findViewById(R.id.profile_user_name)
         mUserStatus = findViewById(R.id.profile_user_status)
         mDeclineButton = findViewById(R.id.profile_decline_request)
+
         mDeclineButton.visibility = View.INVISIBLE
         mDeclineButton.isEnabled = false
+
         initiateDialog()
 
         // Profile User Id & Current User Id
@@ -83,6 +83,7 @@ class ProfileActivity : ChatteryActivity() {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
+                //Update data
                 val userimage = snapshot.child(UsersColumns.Image).value.toString()
                 val username = snapshot.child(UsersColumns.UserName).value.toString()
                 val userstatus = snapshot.child(UsersColumns.Status).value.toString()
@@ -102,7 +103,6 @@ class ProfileActivity : ChatteryActivity() {
 
                     })
 
-
                 mRequestsDatabaseRef.child(mCurrentUserId).addValueEventListener(object : ValueEventListener{
                     override fun onCancelled(p0: DatabaseError) {
                         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -113,7 +113,7 @@ class ProfileActivity : ChatteryActivity() {
                         // Is the profile user in request database?
                         if (snapshot.hasChild(UserID)){
                             val request_state = enumValueOf<RequestState>(snapshot.child(UserID).child(
-                                RequestColumns.Request_state).getValue().toString())
+                                RequestColumns.Request_state).value.toString())
 
                             if (request_state.equals(RequestState.RECIEVED)){
                                 mDeclineButton.visibility = View.VISIBLE
@@ -149,7 +149,7 @@ class ProfileActivity : ChatteryActivity() {
                 }
 
                 mRequestState.equals(RequestState.RECIEVED) ->{
-                    AddFriendAndRemoveRequest(mCurrentUserId, UserID)
+                    addFriendAndRemoveRequest(mCurrentUserId, UserID)
 
                     mDeclineButton.visibility = View.VISIBLE
                     mDeclineButton.isEnabled = true
@@ -161,7 +161,41 @@ class ProfileActivity : ChatteryActivity() {
                 }
             }
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        setUserOnline()
+        updateUI()
+    }
+
+    private fun updateUI() {
+
+        when(mRequestState){
+
+            RequestState.NOT_FRIENDS ->{
+                mRequestButton.isEnabled = true
+                mRequestButton.text = RequestLabel.SEND_REQUEST
+            }
+
+            RequestState.SENT ->{
+                mRequestButton.isEnabled = true
+                mRequestButton.text = RequestLabel.CANCEL_REQUEST
+            }
+
+            RequestState.RECIEVED ->{
+                mRequestButton.isEnabled = true
+                mRequestButton.text = RequestLabel.ACCEPT_REQUEST
+
+                mDeclineButton.visibility = View.VISIBLE
+                mDeclineButton.isEnabled = true
+            }
+
+            RequestState.FRIENDS ->{
+                mRequestButton.isEnabled = true
+                mRequestButton.text = RequestLabel.UNFRIEND
+            }
+        }
     }
 
     private fun AddRequestAndNotification(senderID: String, recieverID: String) {
@@ -211,7 +245,7 @@ class ProfileActivity : ChatteryActivity() {
         })
     }
 
-    private fun AddFriendAndRemoveRequest(senderID: String, recieverID: String) {
+    private fun addFriendAndRemoveRequest(senderID: String, recieverID: String) {
         val date = Date().toString()
 
         val data = HashMap<String, Any?>()

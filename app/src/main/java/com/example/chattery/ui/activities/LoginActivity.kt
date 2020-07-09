@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
 
-        supportActionBar?.setTitle(TITLE)
+        supportActionBar?.title = TITLE
 
         mEmail = findViewById(R.id.login_email)
         mPassword = findViewById(R.id.login_password)
@@ -56,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
         mProgressDialog.setCanceledOnTouchOutside(false)
     }
 
-    fun logInUser(email:String,password:String){
+    private fun logInUser(email:String, password:String){
         //Validate email and password as non null
         if (!isValidEmailAndPassword(email = email,password = password)){
             mProgressDialog.dismiss()
@@ -66,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this) {
-            //Dismiss the dialoge at any state: Failure/Success
+            //Dismiss the dialog at any state: Failure/Success
             mProgressDialog.dismiss()
             if (it.isSuccessful){
                 Log.d(TAG,"Logged in succesfully")
@@ -97,5 +97,5 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // Check non null email and password
-    fun isValidEmailAndPassword(email: String,password: String) =  if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) false else true
+    private fun isValidEmailAndPassword(email: String,password: String) =  if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) false else true
 }

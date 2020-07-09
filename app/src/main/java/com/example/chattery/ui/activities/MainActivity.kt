@@ -49,10 +49,11 @@ class MainActivity : ChatteryActivity() {
 
     }
 
-    fun isNetworkAvailableAndConnected():Boolean {
+    private fun isNetworkAvailableAndConnected():Boolean {
         val connectivitymanager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return !(connectivitymanager.activeNetworkInfo == null || !connectivitymanager.activeNetworkInfo.isConnected)
     }
+
     override fun onStart() {
         super.onStart()
         val user = mAuth.currentUser
@@ -60,7 +61,6 @@ class MainActivity : ChatteryActivity() {
             sendToWelcomeScreen()
             finish()
         }else{
-            //TODO: create meaningful toast
             mUsersDatabaseOnlineLabel = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(FirebaseAuth.getInstance().currentUser!!.uid).child(UsersColumns.Online)
             setUserOnline()
         }
@@ -86,10 +86,11 @@ class MainActivity : ChatteryActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when(item.itemId){
-            R.id.menu_sign_out ->{
-                mAuth.signOut()
-                sendToWelcomeScreen()
-                 true
+
+            R.id.menu_allusers -> {
+                val intent = Intent(this,UsersActivity::class.java)
+                startActivity(intent)
+                true
             }
 
             R.id.menu_settings -> {
@@ -99,11 +100,12 @@ class MainActivity : ChatteryActivity() {
                  true
             }
 
-            R.id.menu_allusers -> {
-                val intent = Intent(this,UsersActivity::class.java)
-                startActivity(intent)
+            R.id.menu_sign_out ->{
+                mAuth.signOut()
+                sendToWelcomeScreen()
                 true
             }
+
             else ->  super.onOptionsItemSelected(item)
 
         }

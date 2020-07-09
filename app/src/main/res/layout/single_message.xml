@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/message_sender_pic"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        app:civ_border_width="0dp"
+        android:scaleType="centerCrop"
+        android:layout_margin="12dp"
+        android:layout_width="58dp"
+        android:layout_height="58dp" />
+
+    <TextView
+        android:id="@+id/message_textview"
+        android:padding="10dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/message_background"
+        android:layout_toEndOf="@+id/message_sender_pic"
+        android:text="This is a fucken sample message that sadjdfksafklsjfksjfs;lkafjasdlkjfladsjflsf sdlfj;lasfk lsdkj;fjsalkfjsal; fl;skjf salfd jaslf jsal;I'm using to see how this thing will acutally turn out" />
+</RelativeLayout>
