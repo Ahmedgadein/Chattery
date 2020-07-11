@@ -178,6 +178,10 @@ class ProfileActivity : ChatteryActivity() {
                 }
             }
         }
+
+        mDeclineButton.setOnClickListener {
+            removeFromRequest(mCurrentUserId, UserID)
+        }
     }
 
     override fun onStart() {
