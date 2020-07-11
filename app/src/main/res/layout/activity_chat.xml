@@ -7,15 +7,26 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.ChatActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chat_messages_recyclerview"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/chat_resfresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#D3D3D3"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_messages_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#D3D3D3"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"

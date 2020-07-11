@@ -51,9 +51,6 @@ class FriendsFragment : Fragment() {
         mQuery = FirebaseDatabase.getInstance().reference.child(FriendsColumns.Friends).child(mAuth.currentUser?.uid!!)
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
 
-        mQuery.keepSynced(true)
-        mUsersDatabase.keepSynced(true)
-
         mFriendsRecyclerView = view.findViewById(R.id.friends_recycerview)
         mFriendsRecyclerView.apply {
             layoutManager = LinearLayoutManager(activity)

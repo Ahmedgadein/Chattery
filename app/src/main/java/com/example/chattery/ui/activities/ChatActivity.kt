@@ -12,6 +12,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.chattery.AgoTime
 import com.example.chattery.ChatteryActivity
 import com.example.chattery.R
@@ -25,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mikhaellopez.circularimageview.CircularImageView
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.actionbar_chat_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -38,10 +40,18 @@ class ChatActivity : ChatteryActivity() {
     lateinit var mMessageSendAddButton: ImageButton
     lateinit var mMessage: EditText
     lateinit var mMessagesRecyclerView: RecyclerView
+    lateinit var mSwipeRefresh: SwipeRefreshLayout
 
     //RecyclerView
     lateinit var messagesList:MutableList<Message>
     lateinit var messagesAdapter: MessagesAdapter
+
+    //Pagination
+    private val NUMBER_OF_MESSAGES_PER_REFRESH = 5
+    var mCurrentPage = 1
+    var itemPos = 0
+    var messageKey = " "
+    var previousMessageKey = " "
 
     companion object{
         private val EXTRA_ID = "userid"
@@ -64,17 +74,18 @@ class ChatActivity : ChatteryActivity() {
 
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(userID)
         mRootRef = FirebaseDatabase.getInstance().reference
-        mUsersDatabase.keepSynced(true)
 
         //Chat buttons and edit text
         mMessage = findViewById(R.id.chat_message_edittext)
         mMessageAddButton = findViewById(R.id.chat_add_button)
         mMessageSendAddButton = findViewById(R.id.chat_message_send_button)
-        mMessagesRecyclerView = findViewById(R.id.chat_messages_recyclerview)
+        mSwipeRefresh = findViewById(R.id.chat_resfresh_layout)
+
 
         //RecyclerView
-        messagesList = mutableListOf()
+        messagesList = mutableListOf<Message>()
         messagesAdapter = MessagesAdapter(this,messagesList)
+        mMessagesRecyclerView = findViewById(R.id.chat_messages_recyclerview)
         mMessagesRecyclerView.apply {
             adapter = messagesAdapter
             layoutManager = LinearLayoutManager(this@ChatActivity)
@@ -87,9 +98,9 @@ class ChatActivity : ChatteryActivity() {
         val view = inflater.inflate(R.layout.actionbar_chat_activity,null,false)
 
         //Toolbar Username, last seen, picture
-        val mUserName = view.findViewById<TextView>(R.id.chat_actionbar_username)
-        val mUserPic = view.findViewById<CircularImageView>(R.id.chat_actionbar_userpic)
-        val mUserLastSeen = view.findViewById<TextView>(R.id.chat_actionbar_last_seen)
+        val mUserName = view.chat_actionbar_username
+        val mUserPic = view.chat_actionbar_userpic
+        val mUserLastSeen = view.chat_actionbar_last_seen
 
         supportActionBar!!.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -144,8 +155,13 @@ class ChatActivity : ChatteryActivity() {
         mMessageSendAddButton.setOnClickListener {
             sendMessage(mCurrentUserID, userID)
         }
-    }
 
+        mSwipeRefresh.setOnRefreshListener {
+            mCurrentPage++
+            itemPos = 0
+            updateMessages(mCurrentUserID, userID)
+        }
+    }
 
     private fun sendMessage(senderID: String, recieverID:String) {
         val message = mMessage.text.toString()
@@ -160,43 +176,103 @@ class ChatActivity : ChatteryActivity() {
             messageMap[MessageColumns.Message] = message
             messageMap[MessageColumns.TimeStamp] = Calendar.getInstance().timeInMillis
             messageMap[MessageColumns.Seen] = false
+            messageMap[MessageColumns.From] = senderID
 
             val usersMessages = HashMap<String,Any>()
             usersMessages.put(senderRef,messageMap)
             usersMessages.put(recieverRef,messageMap)
 
+            mMessage.text = null
+
             mRootRef.updateChildren(usersMessages, object : DatabaseReference.CompletionListener{
                 override fun onComplete(error: DatabaseError?, p1: DatabaseReference) {
-                    if(error == null){
-                        mMessage.text = null
+                    if(error != null){
+                        //TODO:Handle error
                     }
                 }
             })
         }
+
     }
 
-    private fun setMessagesList(currentUser:String, chatUser:String) {
-        mRootRef.child(MessageColumns.Messages).child(currentUser).child(chatUser).addChildEventListener(object: ChildEventListener{
+    private fun updateMessages(currentUser: String, chatUser: String) {
+        val query = mRootRef.child(MessageColumns.Messages).child(currentUser).child(chatUser)
+            .orderByKey()
+            .endAt(messageKey)
+            .limitToLast( NUMBER_OF_MESSAGES_PER_REFRESH)
+
+
+        query.addChildEventListener(object: ChildEventListener{
             override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
                 val message = snapshot.getValue(Message::class.java)!!
-                messagesList.add(message)
+
+                // If message key isn't the last add to the list
+                if(!snapshot.key.toString().equals(previousMessageKey)){
+                    messagesList.add(itemPos++, message)
+
+                // If it's last don't add to list (avoid duplication) & set previous key to current key
+                }else{
+                    previousMessageKey = messageKey
+                }
+
+                if(itemPos == 1){
+                    messageKey = snapshot.key.toString()
+                }
                 messagesAdapter.notifyDataSetChanged()
+                mMessagesRecyclerView.scrollToPosition(itemPos)
+
+                mSwipeRefresh.isRefreshing = false
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        })
+    }
+
+
+    private fun setMessagesList(currentUser:String, chatUser:String) {
+        val query = mRootRef.child(MessageColumns.Messages).child(currentUser).child(chatUser).limitToLast(
+            mCurrentPage * NUMBER_OF_MESSAGES_PER_REFRESH)
+
+
+        query.addChildEventListener(object: ChildEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
+                val message = snapshot.getValue(Message::class.java)!!
+
+                itemPos++
+
+                if(itemPos == 1){
+                    messageKey = snapshot.key.toString()
+                }
+                
+                //On first load, previous last key is the last key
+                previousMessageKey = messageKey
+
+                messagesList.add(message)
+                messagesAdapter.notifyDataSetChanged()
+                mMessagesRecyclerView.scrollToPosition(messagesList.size - 1)
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
             }
 
         })

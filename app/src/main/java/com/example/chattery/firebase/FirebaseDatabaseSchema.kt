@@ -53,6 +53,7 @@ class MessageColumns{
         val Message = "message"
         val Seen = "seen"
         val TimeStamp = "timestamp"
+        val From = "from"
     }
 }
  enum class RequestState{
