@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -23,6 +24,7 @@ class ProfileActivity : ChatteryActivity() {
     lateinit var mUserPic:ImageView
     lateinit var mUserName:TextView
     lateinit var mUserStatus:TextView
+    lateinit var mRequestText:TextView
     lateinit var mRequestButton:Button
     lateinit var mDeclineButton: Button
     lateinit var mProgress:ProgressDialog;
@@ -36,7 +38,7 @@ class ProfileActivity : ChatteryActivity() {
 
     lateinit var mCurrentUserId:String
 
-    var mRequestState = RequestState.NOT_FRIENDS  // Default value
+    lateinit var mRequestState:RequestState // Default value
 
 
     companion object{
@@ -54,10 +56,15 @@ class ProfileActivity : ChatteryActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
+        mRequestState = RequestState.NOT_FRIENDS
+
         mUserPic = findViewById(R.id.profile_user_image)
         mUserName = findViewById(R.id.profile_user_name)
         mUserStatus = findViewById(R.id.profile_user_status)
         mDeclineButton = findViewById(R.id.profile_decline_request)
+        mRequestButton = findViewById(R.id.profile_send_request)
+        mRequestText = findViewById(R.id.request_state)
+        mRequestText.text = "not friends"
 
         mDeclineButton.visibility = View.INVISIBLE
         mDeclineButton.isEnabled = false
@@ -116,17 +123,32 @@ class ProfileActivity : ChatteryActivity() {
                                 RequestColumns.Request_state).value.toString())
 
                             if (request_state.equals(RequestState.RECIEVED)){
-                                mDeclineButton.visibility = View.VISIBLE
-                                mDeclineButton.isEnabled = true
-
                                 mRequestState = RequestState.RECIEVED
-                                mRequestButton.text = RequestLabel.ACCEPT_REQUEST
 
+                                updateUI()
 
                             }else if(request_state.equals(RequestState.SENT)){
                                 mRequestState = RequestState.SENT
-                                mRequestButton.text = RequestLabel.CANCEL_REQUEST
+
+                                updateUI()
                             }
+                        }
+                    }
+
+                })
+
+                mFriendsDatabase.child(mCurrentUserId).addValueEventListener(object : ValueEventListener{
+                    override fun onCancelled(p0: DatabaseError) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        dissmisDialog()
+                        // Is the profile user in request database?
+                        if (snapshot.hasChild(UserID)){
+                            mRequestState = RequestState.FRIENDS
+
+                            updateUI()
                         }
                     }
 
@@ -135,8 +157,6 @@ class ProfileActivity : ChatteryActivity() {
 
         })
 
-
-        mRequestButton = findViewById(R.id.profile_send_request)
         mRequestButton.setOnClickListener {
             mRequestButton.isEnabled = false
             when {
@@ -150,9 +170,6 @@ class ProfileActivity : ChatteryActivity() {
 
                 mRequestState.equals(RequestState.RECIEVED) ->{
                     addFriendAndRemoveRequest(mCurrentUserId, UserID)
-
-                    mDeclineButton.visibility = View.VISIBLE
-                    mDeclineButton.isEnabled = true
                 }
 
                 // If request state is FRIENDS
@@ -163,9 +180,8 @@ class ProfileActivity : ChatteryActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        setUserOnline()
+    override fun onStart() {
+        super.onStart()
         updateUI()
     }
 
@@ -176,16 +192,25 @@ class ProfileActivity : ChatteryActivity() {
             RequestState.NOT_FRIENDS ->{
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.SEND_REQUEST
+                mRequestText.text = "not friends"
+
+                mDeclineButton.visibility = View.INVISIBLE
+                mDeclineButton.isEnabled = false
             }
 
             RequestState.SENT ->{
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.CANCEL_REQUEST
+                mRequestText.text = "sent"
+
+                mDeclineButton.visibility = View.INVISIBLE
+                mDeclineButton.isEnabled = false
             }
 
             RequestState.RECIEVED ->{
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.ACCEPT_REQUEST
+                mRequestText.text = "recieved"
 
                 mDeclineButton.visibility = View.VISIBLE
                 mDeclineButton.isEnabled = true
@@ -194,6 +219,10 @@ class ProfileActivity : ChatteryActivity() {
             RequestState.FRIENDS ->{
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.UNFRIEND
+                mRequestText.text = "friends"
+
+                mDeclineButton.visibility = View.INVISIBLE
+                mDeclineButton.isEnabled = false
             }
         }
     }
@@ -216,9 +245,7 @@ class ProfileActivity : ChatteryActivity() {
             override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
                 //Update button when no error occurs
                 if(error == null){
-                    mRequestButton.isEnabled = true
-                    mRequestButton.text = RequestLabel.CANCEL_REQUEST
-                    mRequestState = RequestState.SENT
+                    updateUI()
                 }else{
                     //TODO: Handle error
                 }
@@ -235,9 +262,9 @@ class ProfileActivity : ChatteryActivity() {
             override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
                 // Update request table when no error occurs
                 if(error == null){
-                    mRequestButton.isEnabled = true
-                    mRequestButton.text = RequestLabel.SEND_REQUEST
                     mRequestState = RequestState.NOT_FRIENDS
+
+                    updateUI()
                 }else{
                     //TODO: Handle error
                 }
@@ -257,9 +284,9 @@ class ProfileActivity : ChatteryActivity() {
         mRootReference.updateChildren(data, object : DatabaseReference.CompletionListener{
             override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
                 if (error == null){
-                    mRequestButton.isEnabled = true
-                    mRequestButton.text = RequestLabel.UNFRIEND
                     mRequestState = RequestState.FRIENDS
+
+                    updateUI()
                 }else{
                     //TODO: Handle error
                 }
@@ -275,9 +302,9 @@ class ProfileActivity : ChatteryActivity() {
         mRootReference.updateChildren(data, object : DatabaseReference.CompletionListener{
             override fun onComplete(error: DatabaseError?, reference: DatabaseReference) {
                 if (error == null){
-                    mRequestButton.isEnabled = true
-                    mRequestButton.text = RequestLabel.SEND_REQUEST
                     mRequestState = RequestState.NOT_FRIENDS
+
+                    updateUI()
                 }else{
                     //TODO: Handle error
                 }
