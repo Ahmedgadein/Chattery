@@ -116,8 +116,8 @@ class FriendsFragment : Fragment() {
 
     class FriendHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val mDateText = itemView.findViewById<TextView>(R.id.single_user_status)
-        private val mUserNameText = itemView.findViewById<TextView>(R.id.single_user_username)
-        private val mImage = itemView.findViewById<CircularImageView>(R.id.single_user_pic)
+        private val mUserNameText = itemView.findViewById<TextView>(R.id.single_request_username)
+        private val mImage = itemView.findViewById<CircularImageView>(R.id.single_request_user_pic)
         private val mOnlineLabel = itemView.findViewById<ImageView>(R.id.single_user_online)
 
         fun bindDate(model: Friend, userName:String, thumbnailURL: String, online: String){

@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/single_user_pic"
+        android:id="@+id/single_request_user_pic"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_width="70dp"
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@+id/single_user_pic"
+        android:layout_toEndOf="@+id/single_request_user_pic"
         android:orientation="vertical">
 
         <LinearLayout
@@ -31,12 +31,12 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_toEndOf="@+id/single_user_pic">
+            android:layout_toEndOf="@+id/single_request_user_pic">
 
             <TextView
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:id="@+id/single_user_username"
+                android:id="@+id/single_request_username"
                 android:fontFamily="@font/roboto_bold"
                 android:text="User Name"
                 android:textColor="@color/colorPrimary"
@@ -58,10 +58,10 @@
             android:id="@+id/single_user_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/single_user_username"
+            android:layout_below="@+id/single_request_username"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
-            android:layout_toEndOf="@+id/single_user_pic"
+            android:layout_toEndOf="@+id/single_request_user_pic"
             android:text="Hey there I'm using Whatsapp" />
     </LinearLayout>
 

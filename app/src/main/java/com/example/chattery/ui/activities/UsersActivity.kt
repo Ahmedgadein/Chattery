@@ -1,7 +1,5 @@
 package com.example.chattery.ui.activities
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -83,9 +81,9 @@ class UsersActivity : ChatteryActivity() {
 
     inner class UserHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        val Username = itemView.findViewById<TextView>(R.id.single_user_username)
+        val Username = itemView.findViewById<TextView>(R.id.single_request_username)
         val Status = itemView.findViewById<TextView>(R.id.single_user_status)
-        val Picture = itemView.findViewById<CircularImageView>(R.id.single_user_pic)
+        val Picture = itemView.findViewById<CircularImageView>(R.id.single_request_user_pic)
 
         fun bind(user: User){
             //Update data

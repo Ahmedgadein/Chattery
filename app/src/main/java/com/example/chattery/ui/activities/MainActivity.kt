@@ -39,6 +39,7 @@ class MainActivity : ChatteryActivity() {
         mViewPager = findViewById(R.id.view_pager)
         mViewPager.adapter =
             TabsAdapter(supportFragmentManager)
+        mViewPager.currentItem = 1   //Chats page
 
         mTabs = findViewById(R.id.main_tab_layout)
         mTabs.setupWithViewPager(mViewPager)
