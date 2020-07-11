@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.activities.ChatActivity"
-            android:theme="@style/ActivityActionBarTheme"/>
+            android:theme="@style/ActivityActionBarTheme"
+            android:parentActivityName=".ui.activities.MainActivity"/>
         <activity
             android:name=".ui.activities.SettingsActivity"
             android:parentActivityName=".ui.activities.MainActivity" />

@@ -21,6 +21,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mikhaellopez.circularimageview.CircularImageView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_requests.view.*
 import kotlinx.android.synthetic.main.single_friend_request.view.*
@@ -52,6 +54,7 @@ class RequestsFragment : Fragment() {
         mRootReference = FirebaseDatabase.getInstance().reference
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
         RequestsQuery = FirebaseDatabase.getInstance().reference.child(RequestColumns.Requests).child(mCurrentUserID)
+        RequestsQuery.keepSynced(true)
 
         mRequestsRecyclerView = view.requests_recyclerview
         mRequestsRecyclerView.apply {
@@ -126,7 +129,17 @@ class RequestsFragment : Fragment() {
 
         fun bind(username:String, userThumb:String){
             mUserName.text = username
-            Picasso.get().load(userThumb).placeholder(R.drawable.avatar_empty).into(mUserPic)
+            Picasso.get().load(userThumb).networkPolicy(NetworkPolicy.OFFLINE)
+                .placeholder(R.drawable.avatar_empty).into(mUserPic, object : Callback {
+                    override fun onSuccess() {
+                        //Cool! nothing to do
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Picasso.get().load(userThumb).placeholder(R.drawable.avatar_empty).into(mUserPic)
+                    }
+
+                })
         }
     }
 
