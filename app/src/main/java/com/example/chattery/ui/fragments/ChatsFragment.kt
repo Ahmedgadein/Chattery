@@ -105,7 +105,7 @@ class ChatsFragment : Fragment() {
                     override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
                         val message = snapshot.getValue(Message::class.java)!!
 
-                        holder.bind(userName, userThumb, message.message)
+                        holder.bind(userName, userThumb, message)
                     }
 
                     override fun onChildRemoved(p0: DataSnapshot) {
@@ -127,11 +127,15 @@ class ChatsFragment : Fragment() {
         val mUserPic = itemView.single_request_user_pic
         val mMessage = itemView.single_user_status
 
-        fun bind(username:String, userPic:String, userMessage:String){
+        fun bind(username:String, userPic:String, model:Message){
             mUserName.text = username
-            //
             mMessage.filters += InputFilter.LengthFilter(20)
-            mMessage.text = userMessage
+            
+            if(model.type == MessageColumns.Text_Type){
+                mMessage.text = model.message
+            }else{
+                mMessage.text = "Image"
+            }
 
             Picasso.get().load(userPic).networkPolicy(NetworkPolicy.OFFLINE)
                 .placeholder(R.drawable.avatar_empty).into(mUserPic, object : Callback {

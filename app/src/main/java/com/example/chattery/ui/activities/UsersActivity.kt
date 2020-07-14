@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chattery.ChatteryActivity
+import com.example.chattery.commons.ChatteryActivity
 import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.R
 import com.example.chattery.model.User

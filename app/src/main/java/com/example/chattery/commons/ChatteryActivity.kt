@@ -1,4 +1,4 @@
-package com.example.chattery
+package com.example.chattery.commons
 
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chattery.firebase.OnlineStatus.Companion.Online

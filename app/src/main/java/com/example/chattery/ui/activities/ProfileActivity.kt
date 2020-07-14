@@ -4,12 +4,11 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.chattery.ChatteryActivity
+import com.example.chattery.commons.ChatteryActivity
 import com.example.chattery.R
 import com.example.chattery.firebase.*
 import com.google.firebase.auth.FirebaseAuth

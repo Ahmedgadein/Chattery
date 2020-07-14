@@ -1,8 +1,7 @@
-package com.example.chattery
+package com.example.chattery.commons
 
 import android.app.Application
 import android.content.Context
-import com.google.firebase.database.ServerValue
 import java.util.*
 
 

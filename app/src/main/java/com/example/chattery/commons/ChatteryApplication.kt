@@ -1,4 +1,4 @@
-package com.example.chattery
+package com.example.chattery.commons
 
 import android.app.Activity
 import android.app.Application

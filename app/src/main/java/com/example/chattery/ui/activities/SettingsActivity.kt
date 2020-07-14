@@ -11,8 +11,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import com.example.chattery.ChatteryActivity
+import com.example.chattery.commons.ChatteryActivity
 import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.R
 import com.google.firebase.auth.FirebaseAuth

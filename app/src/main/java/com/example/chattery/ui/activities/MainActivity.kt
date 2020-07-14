@@ -3,14 +3,12 @@ package com.example.chattery.ui.activities
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
-import com.example.chattery.ChatteryActivity
+import com.example.chattery.commons.ChatteryActivity
 import com.example.chattery.R
 import com.example.chattery.adapters.TabsAdapter
 import com.example.chattery.firebase.UsersColumns

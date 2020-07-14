@@ -1,20 +1,20 @@
 package com.example.chattery.ui.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.chattery.AgoTime
-import com.example.chattery.ChatteryActivity
+import com.example.chattery.commons.AgoTime
+import com.example.chattery.commons.ChatteryActivity
 import com.example.chattery.R
 import com.example.chattery.adapters.MessagesAdapter
 import com.example.chattery.firebase.ChatsColumns
@@ -24,23 +24,28 @@ import com.example.chattery.firebase.UsersColumns
 import com.example.chattery.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.mikhaellopez.circularimageview.CircularImageView
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.actionbar_chat_activity.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class ChatActivity : ChatteryActivity() {
     lateinit var mUsersDatabase: DatabaseReference
+    lateinit var mStorage:StorageReference
     lateinit var mRootRef:DatabaseReference
     lateinit var mAuth: FirebaseAuth
+    lateinit var mCurrentUserID:String
+    lateinit var mChatUserID:String
 
     lateinit var mMessageAddButton: ImageButton
     lateinit var mMessageSendAddButton: ImageButton
     lateinit var mMessage: EditText
     lateinit var mMessagesRecyclerView: RecyclerView
     lateinit var mSwipeRefresh: SwipeRefreshLayout
+
+    private val GET_IMAGE = 11;
 
     //RecyclerView
     lateinit var messagesList:MutableList<Message>
@@ -52,6 +57,8 @@ class ChatActivity : ChatteryActivity() {
     var itemPos = 0
     var messageKey = " "
     var previousMessageKey = " "
+
+    private val TAG = "ChatActivity"
 
     companion object{
         private val EXTRA_ID = "userid"
@@ -69,9 +76,11 @@ class ChatActivity : ChatteryActivity() {
         setContentView(R.layout.activity_chat)
 
         val userID = intent.getStringExtra(EXTRA_ID)!!
+        mChatUserID = userID
         mAuth = FirebaseAuth.getInstance()
-        val mCurrentUserID = mAuth.currentUser?.uid!!
+        mCurrentUserID = mAuth.currentUser?.uid!!
 
+        mStorage = FirebaseStorage.getInstance().reference
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(userID)
         mRootRef = FirebaseDatabase.getInstance().reference
 
@@ -156,11 +165,70 @@ class ChatActivity : ChatteryActivity() {
             sendMessage(mCurrentUserID, userID)
         }
 
+        mMessageAddButton.setOnClickListener {
+            val imageIntent = Intent()
+            imageIntent.type = "image/*"
+            imageIntent.action = Intent.ACTION_GET_CONTENT
+            val chooserIntent = Intent.createChooser(imageIntent, "Choose Image")
+
+            Log.i(TAG,"Started Intent")
+            startActivityForResult(chooserIntent, GET_IMAGE)
+        }
+
         mSwipeRefresh.setOnRefreshListener {
             mCurrentPage++
             itemPos = 0
             updateMessages(mCurrentUserID, userID)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == GET_IMAGE && resultCode == Activity.RESULT_OK){
+            val imageUri = data?.data
+
+            Log.i(TAG, "Recieved Uri")
+            sendImage(imageUri)
+        }
+    }
+
+    private fun sendImage(imageUri: Uri?) {
+        val ImagePath = mStorage.child(MessageColumns.Messages).child(UUID.randomUUID().toString() + ".jpg")
+
+        Log.i(TAG, "Adding image to storage")
+        ImagePath.putFile(imageUri!!).addOnSuccessListener {
+            ImagePath.downloadUrl.addOnSuccessListener {
+                Log.i(TAG, "Image added successfully & got douwnload URL")
+                SendImageMessage(it!!.toString())
+            }
+        }
+    }
+
+    private fun SendImageMessage(imageURL: String) {
+        val imageMessageMap = HashMap<String,Any>()
+        imageMessageMap[MessageColumns.Message] = imageURL
+        imageMessageMap[MessageColumns.Type] = MessageColumns.Image_Type
+        imageMessageMap[MessageColumns.Seen] = false
+        imageMessageMap[MessageColumns.From] = mCurrentUserID
+        imageMessageMap[MessageColumns.TimeStamp] = Calendar.getInstance().timeInMillis
+
+        val push_id = mRootRef.child(MessageColumns.Message).child(mCurrentUserID).child(mChatUserID).push().key!!
+        val senderRef = MessageColumns.Messages + "/" + mCurrentUserID + "/" + mChatUserID + "/" + push_id
+        val recieverRef = MessageColumns.Messages + "/" + mChatUserID + "/" + mCurrentUserID + "/" + push_id
+
+        val usersMessages = HashMap<String,Any>()
+        usersMessages[senderRef] = imageMessageMap
+        usersMessages[recieverRef] = imageMessageMap
+
+        mRootRef.updateChildren(usersMessages, object : DatabaseReference.CompletionListener{
+            override fun onComplete(error: DatabaseError?, p1: DatabaseReference) {
+                if(error != null){
+                    //TODO:Handle error
+                }
+            }
+        })
+
     }
 
     private fun sendMessage(senderID: String, recieverID:String) {
@@ -174,13 +242,14 @@ class ChatActivity : ChatteryActivity() {
 
             val messageMap = HashMap<String, Any>()
             messageMap[MessageColumns.Message] = message
+            messageMap[MessageColumns.Type] = MessageColumns.Text_Type
             messageMap[MessageColumns.TimeStamp] = Calendar.getInstance().timeInMillis
             messageMap[MessageColumns.Seen] = false
             messageMap[MessageColumns.From] = senderID
 
             val usersMessages = HashMap<String,Any>()
-            usersMessages.put(senderRef,messageMap)
-            usersMessages.put(recieverRef,messageMap)
+            usersMessages[senderRef] = messageMap
+            usersMessages[recieverRef] = messageMap
 
             mMessage.text = null
 
@@ -270,6 +339,8 @@ class ChatActivity : ChatteryActivity() {
                 messagesList.add(message)
                 messagesAdapter.notifyDataSetChanged()
                 mMessagesRecyclerView.scrollToPosition(messagesList.size - 1)
+
+                mSwipeRefresh.isRefreshing = false
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
