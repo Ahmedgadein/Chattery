@@ -122,7 +122,7 @@ class FriendsFragment : Fragment() {
         private val mOnlineLabel = itemView.findViewById<ImageView>(R.id.single_user_online)
 
         fun bindDate(model: Friend, userName:String, thumbnailURL: String, online: String){
-            val date = TimeFormatter.friendsSinceFormat(model.friends_since.toLong())
+            val date = TimeFormatter.friendsSinceFormat(model.friends_since)
             mDateText.text = "Friends since $date"
             mUserNameText.text = userName
             mOnlineLabel.visibility = if(online.equals(OnlineStatus.Online)) View.VISIBLE else View.INVISIBLE

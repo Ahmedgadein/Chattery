@@ -37,7 +37,7 @@ class ProfileActivity : ChatteryActivity() {
 
     private lateinit var mCurrentUserId:String
 
-    private lateinit var mRequestState:RequestState 
+    private lateinit var mRequestState:RequestState
 
 
     companion object{
@@ -276,7 +276,7 @@ class ProfileActivity : ChatteryActivity() {
     }
 
     private fun addFriendAndRemoveRequest(senderID: String, recieverID: String) {
-        val date = Calendar.getInstance().timeInMillis.toString()
+        val date = Calendar.getInstance().timeInMillis
 
         val data = HashMap<String, Any?>()
         data.put(FriendsColumns.Friends + "/" + senderID + "/" + recieverID + "/" + FriendsColumns.FriendsSince, date)

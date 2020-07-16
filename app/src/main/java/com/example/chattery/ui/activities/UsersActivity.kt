@@ -89,14 +89,14 @@ class UsersActivity : ChatteryActivity() {
             Username.text = user.username
             Status.text = user.userstatus
             if (user.userimagethumbnail != "default"){
-                Picasso.get().load(user.userimagethumbnail).networkPolicy(NetworkPolicy.OFFLINE)
+                Picasso.get().load(user.userimagethumbnail.toString()).networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.avatar_empty).into(Picture, object : Callback {
                         override fun onSuccess() {
                             //Cool! nothing to do
                         }
 
                         override fun onError(e: Exception?) {
-                            Picasso.get().load(user.userimagethumbnail).placeholder(R.drawable.avatar_empty).into(Picture)
+                            Picasso.get().load(user.userimagethumbnail.toString()).placeholder(R.drawable.avatar_empty).into(Picture)
                         }
                     })
             }

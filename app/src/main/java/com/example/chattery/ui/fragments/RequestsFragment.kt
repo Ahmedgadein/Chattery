@@ -158,7 +158,7 @@ class RequestsFragment : Fragment() {
     }
 
     private fun addFriendAndRemoveRequest(senderID: String, recieverID: String) {
-        val date = Date().toString()
+        val date = Calendar.getInstance().timeInMillis
 
         val data = HashMap<String, Any?>()
         data.put(FriendsColumns.Friends + "/" + senderID + "/" + recieverID + "/" + FriendsColumns.FriendsSince, date)

@@ -15,6 +15,7 @@ object TimeFormatter{
     }
 
     fun friendsSinceFormat(timeMillis: Long):String{
+
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = timeMillis
         val formatter:SimpleDateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm")
