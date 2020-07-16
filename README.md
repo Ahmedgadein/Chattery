@@ -26,5 +26,5 @@ A simple android messaging app that uses Firebase and adheres to the Material de
 ![alt text](Screenshots/settings_upload_photo.jpg)
 
 ## User Profile
-![alt text](Screenshots/profile_default.jpg)
+![alt text](Screenshots/profile_defaultt.jpg)
 ![alt text](Screenshots/profile_received_request.jpg)
