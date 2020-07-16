@@ -15,6 +15,8 @@ import com.example.chattery.firebase.MessageColumns
 import com.example.chattery.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.mikhaellopez.circularimageview.CircularImageView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.single_message.view.*
 
@@ -76,7 +78,18 @@ class MessagesAdapter(val context:Context, val messages: List<Message>) : Recycl
 
                     when(model.from){
                         mCurrentUserID -> {
-                            Picasso.get().load(model.message).into(Image)
+                            Picasso.get().load(model.message).networkPolicy(NetworkPolicy.OFFLINE)
+                                .placeholder(R.drawable.my_message_background).into(Image, object :
+                                    Callback {
+                                    override fun onSuccess() {
+                                        //Cool! nothing to do
+                                    }
+
+                                    override fun onError(e: Exception?) {
+                                        Picasso.get().load(model.message).placeholder(R.drawable.avatar_empty).into(Image)
+                                    }
+
+                                })
 
                             val rules = Image.layoutParams as RelativeLayout.LayoutParams
                             rules.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,RelativeLayout.TRUE)
@@ -85,7 +98,18 @@ class MessagesAdapter(val context:Context, val messages: List<Message>) : Recycl
                         }
 
                         else -> {
-                            Picasso.get().load(model.message).into(Image)
+                            Picasso.get().load(model.message).networkPolicy(NetworkPolicy.OFFLINE)
+                                .placeholder(R.drawable.user_message_background).into(Image, object :
+                                    Callback {
+                                    override fun onSuccess() {
+                                        //Cool! nothing to do
+                                    }
+
+                                    override fun onError(e: Exception?) {
+                                        Picasso.get().load(model.message).placeholder(R.drawable.avatar_empty).into(Image)
+                                    }
+
+                                })
 
                             val rules = Image.layoutParams as RelativeLayout.LayoutParams
                             rules.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,0)

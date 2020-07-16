@@ -20,24 +20,24 @@ import java.lang.Exception
 import java.util.*
 
 class ProfileActivity : ChatteryActivity() {
-    lateinit var mUserPic:ImageView
-    lateinit var mUserName:TextView
-    lateinit var mUserStatus:TextView
-    lateinit var mRequestText:TextView
-    lateinit var mRequestButton:Button
-    lateinit var mDeclineButton: Button
-    lateinit var mProgress:ProgressDialog;
+    private lateinit var mUserPic:ImageView
+    private lateinit var mUserName:TextView
+    private lateinit var mUserStatus:TextView
+    private lateinit var mRequestText:TextView
+    private lateinit var mRequestButton:Button
+    private lateinit var mDeclineButton: Button
+    private lateinit var mProgress:ProgressDialog;
 
     // Databases
-    lateinit var mRootReference: DatabaseReference
-    lateinit var mRequestsDatabaseRef:DatabaseReference    //Friend Requests database
-    lateinit var mUsersDatabaseRef: DatabaseReference      //Users database
-    lateinit var mFriendsDatabase: DatabaseReference       //Friends database
-    lateinit var mNotificationsDatabase:DatabaseReference  //Notifications database
+    private lateinit var mRootReference: DatabaseReference
+    private lateinit var mRequestsDatabaseRef:DatabaseReference    //Friend Requests database
+    private lateinit var mUsersDatabaseRef: DatabaseReference      //Users database
+    private lateinit var mFriendsDatabase: DatabaseReference       //Friends database
+    private lateinit var mNotificationsDatabase:DatabaseReference  //Notifications database
 
-    lateinit var mCurrentUserId:String
+    private lateinit var mCurrentUserId:String
 
-    lateinit var mRequestState:RequestState // Default value
+    private lateinit var mRequestState:RequestState 
 
 
     companion object{
@@ -160,7 +160,7 @@ class ProfileActivity : ChatteryActivity() {
             mRequestButton.isEnabled = false
             when {
                 mRequestState.equals(RequestState.NOT_FRIENDS) -> {
-                    AddRequestAndNotification(mCurrentUserId,UserID)
+                    addRequestAndNotification(mCurrentUserId,UserID)
                 }
 
                 mRequestState.equals(RequestState.SENT) ->{
@@ -204,7 +204,7 @@ class ProfileActivity : ChatteryActivity() {
             RequestState.SENT ->{
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.CANCEL_REQUEST
-                mRequestText.text = "sent"
+                mRequestText.text = "request sent"
 
                 mDeclineButton.visibility = View.INVISIBLE
                 mDeclineButton.isEnabled = false
@@ -213,7 +213,7 @@ class ProfileActivity : ChatteryActivity() {
             RequestState.RECIEVED ->{
                 mRequestButton.isEnabled = true
                 mRequestButton.text = RequestLabel.ACCEPT_REQUEST
-                mRequestText.text = "recieved"
+                mRequestText.text = "request received"
 
                 mDeclineButton.visibility = View.VISIBLE
                 mDeclineButton.isEnabled = true
@@ -230,7 +230,7 @@ class ProfileActivity : ChatteryActivity() {
         }
     }
 
-    private fun AddRequestAndNotification(senderID: String, recieverID: String) {
+    private fun addRequestAndNotification(senderID: String, recieverID: String) {
         // get Key
         val notificationID = mNotificationsDatabase.child(recieverID).push().key
 
@@ -276,7 +276,7 @@ class ProfileActivity : ChatteryActivity() {
     }
 
     private fun addFriendAndRemoveRequest(senderID: String, recieverID: String) {
-        val date = Date().toString()
+        val date = Calendar.getInstance().timeInMillis.toString()
 
         val data = HashMap<String, Any?>()
         data.put(FriendsColumns.Friends + "/" + senderID + "/" + recieverID + "/" + FriendsColumns.FriendsSince, date)

@@ -31,11 +31,11 @@ import java.util.*
 
 
 class RequestsFragment : Fragment() {
-    lateinit var mUsersDatabase:DatabaseReference
-    lateinit var mRootReference:DatabaseReference
-    lateinit var mAuth:FirebaseAuth
-    lateinit var RequestsQuery: Query
-    lateinit var mCurrentUserID:String
+    private lateinit var mUsersDatabase:DatabaseReference
+    private lateinit var mRootReference:DatabaseReference
+    private lateinit var mAuth:FirebaseAuth
+    private lateinit var RequestsQuery: Query
+    private lateinit var mCurrentUserID:String
 
 
     lateinit var mRequestsRecyclerView: RecyclerView
@@ -45,7 +45,7 @@ class RequestsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         val view = inflater.inflate(R.layout.fragment_requests, container, false)
 
         mAuth = FirebaseAuth.getInstance()
@@ -54,7 +54,6 @@ class RequestsFragment : Fragment() {
         mRootReference = FirebaseDatabase.getInstance().reference
         mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users)
         RequestsQuery = FirebaseDatabase.getInstance().reference.child(RequestColumns.Requests).child(mCurrentUserID)
-        RequestsQuery.keepSynced(true)
 
         mRequestsRecyclerView = view.requests_recyclerview
         mRequestsRecyclerView.apply {

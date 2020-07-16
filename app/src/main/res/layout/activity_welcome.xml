@@ -53,7 +53,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/roboto_thin"
         android:textSize="24dp"
-        android:text="@string/sign_up_label"
+        android:text="@string/sign_up"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

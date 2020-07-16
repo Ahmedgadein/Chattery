@@ -17,12 +17,13 @@ import com.example.chattery.firebase.UsersColumns
 import com.google.firebase.iid.FirebaseInstanceId
 
 class SignUpActivity : AppCompatActivity() {
-    lateinit var mAuth: FirebaseAuth;                //Firebase Authentication
-    lateinit var mDataBaseRef: DatabaseReference      //Firebase Database Reference
-    lateinit var mEmail: EditText
-    lateinit var mUserName: EditText
-    lateinit var mPassword: EditText
-    lateinit var mProgress: ProgressDialog
+    private lateinit var mAuth: FirebaseAuth;
+    private lateinit var mDataBaseRef: DatabaseReference
+
+    private lateinit var mEmail: EditText
+    private lateinit var mUserName: EditText
+    private lateinit var mPassword: EditText
+    private lateinit var mProgress: ProgressDialog
 
     private val TAG: String = "SignUpActivity"
     private val TITLE = "Sign up"
@@ -82,8 +83,9 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun AddUserToDataBase(name: String) {
-        val mUserId = mAuth.currentUser?.uid    //Current created user id
-        val tokenId = FirebaseInstanceId.getInstance().token   //User token
+        //User ID & Token
+        val mUserId = mAuth.currentUser?.uid
+        val tokenId = FirebaseInstanceId.getInstance().token
 
         mDataBaseRef = FirebaseDatabase.getInstance().reference
         mDataBaseRef = mDataBaseRef.child(UsersColumns.Users).child(mUserId!!)    //  Database/Users/userid
@@ -92,7 +94,7 @@ class SignUpActivity : AppCompatActivity() {
         //Database entries for current user
         val data = HashMap<String, Any?>()
         data[UsersColumns.UserName] = name
-        data[UsersColumns.Status] = "Hey there, I'm on Chattery!"    //inspired by a famous Software, Lolz :-)
+        data[UsersColumns.Status] = "Hey there, I'm on Chattery!"    //inspired by a famous Software, Lol :-)
         data[UsersColumns.Image] = "default"
         data[UsersColumns.ImageThumbnail] = "default"
         data[UsersColumns.TokenId] = tokenId!!
@@ -102,7 +104,6 @@ class SignUpActivity : AppCompatActivity() {
 
             if (it.isSuccessful) {
                 Log.d(TAG, "Added user to database successfully")
-                //When added to database, route user to Main Activity
                 sendToMainPage()
             } else {
                 Log.d(TAG, "Failed to add user to database")
@@ -112,7 +113,6 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    // Send to Main Activity
     private fun sendToMainPage() {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -121,7 +121,6 @@ class SignUpActivity : AppCompatActivity() {
         finish()
     }
 
-    //Validate non empty email and password
     private fun isValidUserNameEmailAndPassword(username: String, email: String, password: String) =
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(username)) false else true
 }

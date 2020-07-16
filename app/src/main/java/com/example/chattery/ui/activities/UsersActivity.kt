@@ -22,12 +22,12 @@ import com.squareup.picasso.Picasso
 import java.lang.Exception
 
 class UsersActivity : ChatteryActivity() {
-    lateinit var mQuery: Query
-    lateinit var mAdapter: FirebaseRecyclerAdapter<User, UserHolder>;
-    lateinit var mRecyclerView: RecyclerView
+    private lateinit var mQuery: Query
+    private lateinit var mAdapter: FirebaseRecyclerAdapter<User, UserHolder>;
+    private lateinit var mRecyclerView: RecyclerView
 
-    val TAG = "AllUserActivity"
-    val TITLE = "All Users"
+    private val TAG = "AllUserActivity"
+    private val TITLE = "All Users"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,6 @@ class UsersActivity : ChatteryActivity() {
                 Log.i(TAG, "Binding user: $position")
                 holder.bind((model))
 
-                //Extract the user ID
                 val UserId = getRef(position).key!!
 
                 //Route to Profile activity when Clicked
@@ -90,7 +89,7 @@ class UsersActivity : ChatteryActivity() {
             Username.text = user.username
             Status.text = user.userstatus
             if (user.userimagethumbnail != "default"){
-                Picasso.get().load(user.userimagethumbnail.toString()).networkPolicy(NetworkPolicy.OFFLINE)
+                Picasso.get().load(user.userimagethumbnail).networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.avatar_empty).into(Picture, object : Callback {
                         override fun onSuccess() {
                             //Cool! nothing to do

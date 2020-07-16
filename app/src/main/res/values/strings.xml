@@ -11,4 +11,15 @@
     <string name="status_placeholder">Hey there, I\'m on Chattery</string>
     <string name="set_photo_label">Set Photo</string>
     <string name="set_status_label">Set status</string>
+    <string name="create_new_account_label">Create a new account</string>
+    <string name="user_name">User name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="log_in_to_your_account">Log in to your account</string>
+    <string name="log_in">Log in</string>
+    <string name="user_name_label">User Name</string>
+    <string name="enter_message">Enter message</string>
+    <string name="send_request">Send request</string>
+    <string name="decline">Decline</string>
 </resources>

@@ -31,7 +31,7 @@
         android:layout_below="@+id/settings_profile_image"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:text="Ahmed Gadein"
+        android:text="@string/user_name_label"
         android:textStyle="bold"
         android:fontFamily="@font/roboto_bold"
         android:textColor="@android:color/white"

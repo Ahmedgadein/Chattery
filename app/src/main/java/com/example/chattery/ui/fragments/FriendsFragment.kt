@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chattery.ui.activities.ChatActivity
 import com.example.chattery.R
+import com.example.chattery.commons.TimeFormatter
 import com.example.chattery.firebase.FriendsColumns
 import com.example.chattery.firebase.OnlineStatus
 import com.example.chattery.firebase.UsersColumns
@@ -121,7 +122,8 @@ class FriendsFragment : Fragment() {
         private val mOnlineLabel = itemView.findViewById<ImageView>(R.id.single_user_online)
 
         fun bindDate(model: Friend, userName:String, thumbnailURL: String, online: String){
-            mDateText.text = model.friends_since
+            val date = TimeFormatter.friendsSinceFormat(model.friends_since.toLong())
+            mDateText.text = "Friends since $date"
             mUserNameText.text = userName
             mOnlineLabel.visibility = if(online.equals(OnlineStatus.Online)) View.VISIBLE else View.INVISIBLE
             Picasso.get().load(thumbnailURL).networkPolicy(NetworkPolicy.OFFLINE)

@@ -29,16 +29,16 @@ import kotlinx.android.synthetic.main.single_friend_request.view.*
 import kotlinx.android.synthetic.main.single_user.view.*
 
 class ChatsFragment : Fragment() {
-    lateinit var mAuth: FirebaseAuth
-    lateinit var ChatsQuery:Query
-    lateinit var mRootRef:DatabaseReference
-    lateinit var ChatsDatabase:DatabaseReference
-    lateinit var mCurrentUserID:String
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var ChatsQuery:Query
+    private lateinit var mRootRef:DatabaseReference
+    private lateinit var ChatsDatabase:DatabaseReference
+    private lateinit var mCurrentUserID:String
 
-    lateinit var mChatsRecyclerView:RecyclerView
-    lateinit var mChatsAdapter:FirebaseRecyclerAdapter<Chat,ChatHolder>
+    private lateinit var mChatsRecyclerView:RecyclerView
+    private lateinit var mChatsAdapter:FirebaseRecyclerAdapter<Chat,ChatHolder>
 
-    val TAG = "ChatsFragment"
+    private val TAG = "ChatsFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -130,7 +130,7 @@ class ChatsFragment : Fragment() {
         fun bind(username:String, userPic:String, model:Message){
             mUserName.text = username
             mMessage.filters += InputFilter.LengthFilter(20)
-            
+
             if(model.type == MessageColumns.Text_Type){
                 mMessage.text = model.message
             }else{

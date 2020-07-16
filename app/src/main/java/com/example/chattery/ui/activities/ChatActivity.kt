@@ -32,31 +32,31 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class ChatActivity : ChatteryActivity() {
-    lateinit var mUsersDatabase: DatabaseReference
-    lateinit var mStorage:StorageReference
-    lateinit var mRootRef:DatabaseReference
-    lateinit var mAuth: FirebaseAuth
-    lateinit var mCurrentUserID:String
-    lateinit var mChatUserID:String
+    private lateinit var mUsersDatabase: DatabaseReference
+    private lateinit var mStorage:StorageReference
+    private lateinit var mRootRef:DatabaseReference
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var mCurrentUserID:String
+    private lateinit var mChatUserID:String
 
-    lateinit var mMessageAddButton: ImageButton
-    lateinit var mMessageSendAddButton: ImageButton
-    lateinit var mMessage: EditText
-    lateinit var mMessagesRecyclerView: RecyclerView
-    lateinit var mSwipeRefresh: SwipeRefreshLayout
+    private lateinit var mMessageAddButton: ImageButton
+    private lateinit var mMessageSendAddButton: ImageButton
+    private lateinit var mMessage: EditText
+    private lateinit var mMessagesRecyclerView: RecyclerView
+    private lateinit var mSwipeRefresh: SwipeRefreshLayout
+
+    //RecyclerView
+    private lateinit var messagesList:MutableList<Message>
+    private lateinit var messagesAdapter: MessagesAdapter
 
     private val GET_IMAGE = 11;
 
-    //RecyclerView
-    lateinit var messagesList:MutableList<Message>
-    lateinit var messagesAdapter: MessagesAdapter
-
     //Pagination
     private val NUMBER_OF_MESSAGES_PER_REFRESH = 5
-    var mCurrentPage = 1
-    var itemPos = 0
-    var messageKey = " "
-    var previousMessageKey = " "
+    private var mCurrentPage = 1
+    private var itemPos = 0
+    private var messageKey = " "
+    private var previousMessageKey = " "
 
     private val TAG = "ChatActivity"
 
@@ -75,13 +75,12 @@ class ChatActivity : ChatteryActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        val userID = intent.getStringExtra(EXTRA_ID)!!
-        mChatUserID = userID
+        mChatUserID = intent.getStringExtra(EXTRA_ID)!!
         mAuth = FirebaseAuth.getInstance()
         mCurrentUserID = mAuth.currentUser?.uid!!
 
         mStorage = FirebaseStorage.getInstance().reference
-        mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(userID)
+        mUsersDatabase = FirebaseDatabase.getInstance().reference.child(UsersColumns.Users).child(mChatUserID)
         mRootRef = FirebaseDatabase.getInstance().reference
 
         //Chat buttons and edit text
@@ -99,7 +98,7 @@ class ChatActivity : ChatteryActivity() {
             adapter = messagesAdapter
             layoutManager = LinearLayoutManager(this@ChatActivity)
         }
-        setMessagesList(mCurrentUserID,userID)
+        setMessagesList()
 
         // --------- Actionbar layout ----------------//>
 
@@ -147,8 +146,8 @@ class ChatActivity : ChatteryActivity() {
                     chatMap[ChatsColumns.Timestamp] = Calendar.getInstance().timeInMillis
 
                     val usersChatMap = HashMap<String, Any>()
-                    usersChatMap[ChatsColumns.Chats + "/" + mCurrentUserID + "/" + userID] = chatMap
-                    usersChatMap[ChatsColumns.Chats + "/" + userID + "/" + mCurrentUserID] = chatMap
+                    usersChatMap[ChatsColumns.Chats + "/" + mCurrentUserID + "/" + mChatUserID] = chatMap
+                    usersChatMap[ChatsColumns.Chats + "/" + mChatUserID + "/" + mCurrentUserID] = chatMap
 
                     mRootRef.updateChildren(usersChatMap, object : DatabaseReference.CompletionListener{
                         override fun onComplete(error: DatabaseError?, p1: DatabaseReference) {
@@ -162,7 +161,7 @@ class ChatActivity : ChatteryActivity() {
         })
 
         mMessageSendAddButton.setOnClickListener {
-            sendMessage(mCurrentUserID, userID)
+            sendMessage()
         }
 
         mMessageAddButton.setOnClickListener {
@@ -178,7 +177,7 @@ class ChatActivity : ChatteryActivity() {
         mSwipeRefresh.setOnRefreshListener {
             mCurrentPage++
             itemPos = 0
-            updateMessages(mCurrentUserID, userID)
+            updateMessages()
         }
     }
 
@@ -231,21 +230,21 @@ class ChatActivity : ChatteryActivity() {
 
     }
 
-    private fun sendMessage(senderID: String, recieverID:String) {
+    private fun sendMessage() {
         val message = mMessage.text.toString()
 
         if(!TextUtils.isEmpty(message)){
 
-            val push_id = mRootRef.child(MessageColumns.Message).child(senderID).child(recieverID).push().key!!
-            val senderRef = MessageColumns.Messages + "/" + senderID + "/" + recieverID + "/" + push_id
-            val recieverRef = MessageColumns.Messages + "/" + recieverID + "/" + senderID + "/" + push_id
+            val push_id = mRootRef.child(MessageColumns.Message).child(mCurrentUserID).child(mChatUserID).push().key!!
+            val senderRef = MessageColumns.Messages + "/" + mCurrentUserID + "/" + mChatUserID + "/" + push_id
+            val recieverRef = MessageColumns.Messages + "/" + mChatUserID + "/" + mCurrentUserID + "/" + push_id
 
             val messageMap = HashMap<String, Any>()
             messageMap[MessageColumns.Message] = message
             messageMap[MessageColumns.Type] = MessageColumns.Text_Type
             messageMap[MessageColumns.TimeStamp] = Calendar.getInstance().timeInMillis
             messageMap[MessageColumns.Seen] = false
-            messageMap[MessageColumns.From] = senderID
+            messageMap[MessageColumns.From] = mCurrentUserID
 
             val usersMessages = HashMap<String,Any>()
             usersMessages[senderRef] = messageMap
@@ -264,12 +263,13 @@ class ChatActivity : ChatteryActivity() {
 
     }
 
-    private fun updateMessages(currentUser: String, chatUser: String) {
-        val query = mRootRef.child(MessageColumns.Messages).child(currentUser).child(chatUser)
+    private fun updateMessages() {
+        val query = mRootRef.child(MessageColumns.Messages).child(mCurrentUserID).child(mChatUserID)
             .orderByKey()
             .endAt(messageKey)
             .limitToLast( NUMBER_OF_MESSAGES_PER_REFRESH)
 
+        query.keepSynced(true)
 
         query.addChildEventListener(object: ChildEventListener{
             override fun onCancelled(p0: DatabaseError) {
@@ -309,9 +309,10 @@ class ChatActivity : ChatteryActivity() {
     }
 
 
-    private fun setMessagesList(currentUser:String, chatUser:String) {
-        val query = mRootRef.child(MessageColumns.Messages).child(currentUser).child(chatUser).limitToLast(
+    private fun setMessagesList() {
+        val query = mRootRef.child(MessageColumns.Messages).child(mCurrentUserID).child(mChatUserID).limitToLast(
             mCurrentPage * NUMBER_OF_MESSAGES_PER_REFRESH)
+        query.keepSynced(true)
 
 
         query.addChildEventListener(object: ChildEventListener{
@@ -332,7 +333,7 @@ class ChatActivity : ChatteryActivity() {
                 if(itemPos == 1){
                     messageKey = snapshot.key.toString()
                 }
-                
+
                 //On first load, previous last key is the last key
                 previousMessageKey = messageKey
 

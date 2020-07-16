@@ -35,21 +35,21 @@ import java.lang.Exception
 
 
 class SettingsActivity : ChatteryActivity() {
-    //Firebase Database reference
-    lateinit var mDataBaseRef: DatabaseReference
-    lateinit var mCurrentUser: FirebaseUser
-    lateinit var mUserId:String
+    //Firebase Database
+    private lateinit var mDataBaseRef: DatabaseReference
+    private lateinit var mCurrentUser: FirebaseUser
+    private lateinit var mUserId:String
 
-    //Firebase Storage reference
-    lateinit var mStorageRef: StorageReference
+    //Firebase Storage
+    private lateinit var mStorageRef: StorageReference
 
-    lateinit var mProfilePic: CircularImageView
-    lateinit var mUsername: TextView
-    lateinit var mStatus: TextView
-    lateinit var mSetStatusButton: Button
-    lateinit var mSetPicButton: Button
+    private lateinit var mProfilePic: CircularImageView
+    private lateinit var mUsername: TextView
+    private lateinit var mStatus: TextView
+    private lateinit var mSetStatusButton: Button
+    private lateinit var mSetPicButton: Button
 
-    lateinit var mProgress:ProgressDialog;
+    private lateinit var mProgress:ProgressDialog;
 
 
     private val REQUEST_IMAGE = 0;

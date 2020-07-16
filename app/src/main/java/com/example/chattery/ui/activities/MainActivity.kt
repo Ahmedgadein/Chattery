@@ -18,10 +18,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ChatteryActivity() {
-    lateinit var mAuth: FirebaseAuth     //Firebase Authentication
-    lateinit var mViewPager:ViewPager
-    lateinit var mTabs:TabLayout
-    lateinit var mToolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var mAuth: FirebaseAuth     //Firebase Authentication
+    private lateinit var mViewPager:ViewPager
+    private lateinit var mTabs:TabLayout
+    private lateinit var mToolbar: androidx.appcompat.widget.Toolbar
     private lateinit var mUsersDatabaseOnlineLabel:DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {

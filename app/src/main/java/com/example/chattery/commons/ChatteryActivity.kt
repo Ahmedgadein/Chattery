@@ -40,7 +40,6 @@ open class ChatteryActivity : AppCompatActivity(){
 
     protected fun setUserOffline() {
         if (userExists()){
-            val timestamp = Calendar.getInstance().timeInMillis
             mUsersDatabaseOnlineLabel.setValue(ServerValue.TIMESTAMP)
         }
     }

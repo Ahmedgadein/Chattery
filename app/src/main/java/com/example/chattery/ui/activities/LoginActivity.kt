@@ -17,13 +17,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
 
 class LoginActivity : AppCompatActivity() {
-    lateinit var mAuth:FirebaseAuth  //FireBase Authentication instance
+    private lateinit var mAuth:FirebaseAuth  //FireBase Authentication instance
     lateinit var mUsersDatabase: DatabaseReference
 
-    lateinit var mEmail:EditText;
-    lateinit var mPassword:EditText;
-    lateinit var mLoginButton: Button;
-    lateinit var mProgressDialog:ProgressDialog
+    private lateinit var mEmail:EditText;
+    private lateinit var mPassword:EditText;
+    private lateinit var mLoginButton: Button;
+    private lateinit var mProgressDialog:ProgressDialog
 
     private val TAG = "LoginActivity"
     private val TITLE = "Log in"
@@ -79,9 +79,6 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 }
 
-
-                //When logged send user to main Activity
-
             }else{
                 Log.d(TAG, "Failed to log in")
                 Toast.makeText(this, "Couldn't log in, try again",Toast.LENGTH_LONG).show()
@@ -96,6 +93,5 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // Check non null email and password
     private fun isValidEmailAndPassword(email: String,password: String) =  if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) false else true
 }
